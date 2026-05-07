@@ -12,6 +12,7 @@ from deeptutor.tools.prompting import load_prompt_hints
 
 from .code_edit_tool import DeepSeekCodeEditTool
 from .lsp_tool import LSPDiagnosticTool
+from .mcp_tool import MCPTool
 
 logger = logging.getLogger(__name__)
 
@@ -513,6 +514,7 @@ BUILTIN_TOOL_TYPES: tuple[type[BaseTool], ...] = (
     GeoGebraAnalysisTool,
     DeepSeekCodeEditTool,
     LSPDiagnosticTool,
+    MCPTool,
 )
 
 BUILTIN_TOOL_NAMES: tuple[str, ...] = tuple(tool_type().name for tool_type in BUILTIN_TOOL_TYPES)
