@@ -1,0 +1,76 @@
+# DeepTutor Docker Compose
+# Full deployment with all services
+
+version: '3.8'
+
+services:
+  # Main DeepTutor service
+  deeptutor:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: deeptutor
+    restart: unless-stopped
+    ports:
+      - "3782:3782"  # WebUI
+      - "8765:8765"  # WebSocket Gateway
+    volumes:
+      - ./data:/app/data
+      - ./logs:/app/logs
+      - ./.env:/app/.env:ro
+    environment:
+      - PYTHONUNBUFFERED=1
+    networks:
+      - deeptutor-network
+
+  # Optional: ChromaDB for vector storage
+  chromadb:
+    image: chromadb/chroma:latest
+    container_name: deeptutor-chroma
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    volumes:
+      - chroma-data:/chroma/chroma
+    environment:
+      - IS_PERSISTENT=TRUE
+      - PERSIST_DIRECTORY=/chroma/chroma
+    networks:
+      - deeptutor-network
+
+  # Optional: PostgreSQL database
+  postgres:
+    image: postgres:15-alpine
+    container_name: deeptutor-postgres
+    restart: unless-stopped
+    environment:
+      - POSTGRES_USER=deeptutor
+      - POSTGRES_PASSWORD=deeptutor
+      - POSTGRES_DB=deeptutor
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    networks:
+      - deeptutor-network
+
+  # Optional: Redis for caching
+  redis:
+    image: redis:7-alpine
+    container_name: deeptutor-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - deeptutor-network
+
+volumes:
+  chroma-data:
+  postgres-data:
+  redis-data:
+
+networks:
+  deeptutor-network:
+    driver: bridge
