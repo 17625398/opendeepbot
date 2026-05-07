@@ -514,7 +514,6 @@ BUILTIN_TOOL_TYPES: tuple[type[BaseTool], ...] = (
     GeoGebraAnalysisTool,
     DeepSeekCodeEditTool,
     LSPDiagnosticTool,
-    MCPTool,
 )
 
 BUILTIN_TOOL_NAMES: tuple[str, ...] = tuple(tool_type().name for tool_type in BUILTIN_TOOL_TYPES)
