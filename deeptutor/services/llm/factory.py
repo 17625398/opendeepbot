@@ -353,6 +353,7 @@ async def complete(
     max_retries: int = DEFAULT_MAX_RETRIES,
     retry_delay: float = DEFAULT_RETRY_DELAY,
     exponential_backoff: bool = DEFAULT_EXPONENTIAL_BACKOFF,
+    stream_bus: Any = None,  # optional StreamBus for sending events
     **kwargs: Any,
 ) -> str:
     caller_extra_headers = kwargs.pop("extra_headers", None)
@@ -408,6 +409,19 @@ async def complete(
         raise map_error(
             RuntimeError(response.content or "LLM request failed"), provider=config.provider_name
         )
+
+    # Send COST_UPDATE event if cost info is available
+    if stream_bus is not None and response.cost:
+        from deeptutor.core.stream import StreamEvent, StreamEventType
+        await stream_bus.emit(
+            StreamEvent(
+                type=StreamEventType.COST_UPDATE,
+                content=f"Cost: ${response.cost.get('total_cost', 0):.6f}",
+                metadata=response.cost,
+                source="llm",
+            )
+        )
+
     return response.content or ""
 
 
