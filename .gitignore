@@ -1,0 +1,48 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+Thumbs.db
+Desktop.ini
+.DS_Store
+
+# DeepTutor specific
+deeptutor.egg-info/
+pip-log.txt
+
+# Nested git repositories (do not commit as submodules)
+hermes-web-ui/
+deer-flow/
+LinkMind/
+bettafish-mindspider/
+hermes-agent-latest/
+hermes-agent-original/
+deepbot/
+clawteam/
+
+# Logs
+*.log
+logs/
+
+# Temp files
+tmp/
+temp/
+*.tmp
