@@ -1,140 +1,61 @@
 # DeepTutor 快速开始指南
 
-## 📋 目录
+## 🚀 3分钟快速上手
 
-- [前置要求](#前置要求)
-- [快速安装](#快速安装)
-- [配置说明](#配置说明)
-- [本地使用](#本地使用)
-- [多平台使用](#多平台使用)
-- [高级功能](#高级功能)
-- [常见问题](#常见问题)
-
-## 🚀 前置要求
-
-- Python 3.9+
-- 支持的 LLM（本地或云端）
-- 根据需要安装相应的依赖
-
-## 💻 快速安装
-
-### 1. 克隆项目
+### 1. 复制配置文件
 
 ```bash
-git clone https://github.com/17625398/opendeepbot.git
-cd opendeepbot
-```
-
-### 2. 安装依赖
-
-```bash
-# 基础依赖
-pip install -e .
-
-# 或者使用 Conda
-conda env create -f environment.yml
-conda activate deeptutor
-```
-
-### 3. 配置环境
-
-```bash
-# 复制环境变量模板
 cp .env.example .env
-
-# 编辑 .env 文件，填入你的配置
 ```
 
-## ⚙️ 配置说明
+### 2. 配置您的 API Key
 
-### 最小配置（使用 DeepSeek）
-
-在 `.env` 文件中设置：
+编辑 `.env` 文件，填入您的 LLM API Key：
 
 ```env
+# LLM 配置
 LLM_PROVIDER=deepseek
-LLM_API_KEY=sk-xxxxxxxxxxxxxxx
 LLM_MODEL=deepseek-chat
+LLM_API_KEY=your-api-key-here  # 换成您的 API Key
 ```
 
-### 使用本地 Ollama
+### 3. 启用您想使用的通道
+
+```env
+# 选择您要启用的通道（设置为 true）
+TELEGRAM_ENABLED=false
+DISCORD_ENABLED=false
+WEBSOCKET_ENABLED=true  # WebSocket 默认启用
+```
+
+### 4. 启动 DeepTutor
 
 ```bash
-# 1. 安装并启动 Ollama
-# https://ollama.ai
-
-# 2. 拉取模型
-ollama pull llama3
-
-# 3. 配置环境变量
-OLLAMA_ENABLED=true
-LLM_PROVIDER=ollama
-LLM_MODEL=llama3
+python run.py
 ```
 
-## 🎯 本地使用
+---
 
-### 启动 WebUI
+## 📱 通道配置详解
 
-```bash
-# 方式 1：使用脚本
-python scripts/start_webui.py
+### Telegram
 
-# 方式 2：进入 web 目录
-cd web
-npm install
-npm run dev
+```env
+TELEGRAM_ENABLED=true
+TELEGRAM_TOKEN=your-telegram-bot-token
 ```
 
-访问 `http://localhost:3000`
+获取 Token: [@BotFather](https://t.me/BotFather)
 
-### 使用命令行
+### Discord
 
-```bash
-# 聊天模式
-deeptutor chat
-
-# 执行任务
-deeptutor task "分析这个代码库"
+```env
+DISCORD_ENABLED=true
+DISCORD_TOKEN=your-discord-bot-token
+DISCORD_PREFIX=!
 ```
 
-## 🌐 多平台使用
-
-### 启动通道网关
-
-```bash
-python scripts/start_channels.py
-```
-
-### 配置 Telegram Bot
-
-1. 在 `.env` 中设置：
-   ```env
-   TELEGRAM_ENABLED=true
-   TELEGRAM_TOKEN=your-bot-token
-   ```
-
-2. 在 [@BotFather](https://t.me/BotFather) 创建 bot
-
-3. 启动后在 Telegram 中与 bot 对话
-
-### 配置 Discord Bot
-
-1. 在 `.env` 中设置：
-   ```env
-   DISCORD_ENABLED=true
-   DISCORD_TOKEN=your-bot-token
-   ```
-
-2. 在 [Discord Developer Portal](https://discord.com/developers/applications) 创建应用
-
-3. 邀请 bot 到你的服务器
-
-4. 使用 `!` 前缀发送消息
-
-### 使用 WebSocket 网关
-
-WebSocket 已默认启用，用于与 WebUI 通信：
+### WebSocket（推荐用于快速测试）
 
 ```env
 WEBSOCKET_ENABLED=true
@@ -142,122 +63,86 @@ WEBSOCKET_HOST=localhost
 WEBSOCKET_PORT=8765
 ```
 
-## 🔧 高级功能
+连接后可以通过 WebSocket 发送消息测试。
 
-### YOLO 模式
-
-自动批准所有工具调用，无需人工干预：
-
-```python
-from deeptutor.integrations.nanobot.agent import AgentLoop
-
-agent = AgentLoop(llm_client, yolo_mode=True)
-result = await agent.run("自动完成这个任务")
-```
-
-### 成本跟踪
-
-实时跟踪 LLM 调用成本：
-
-```python
-cost_summary = agent.get_cost_summary()
-print(f"总消耗: ${cost_summary['total_cost_usd']:.6f}")
-print(f"总 tokens: {cost_summary['total_tokens']}")
-```
-
-### 工作区快照和回滚
-
-```python
-# 创建快照
-snapshot_id = agent._create_snapshot("before_action")
-
-# 稍后回滚
-agent._rollback_to_snapshot(snapshot_id)
-
-# 或者回滚几步
-agent._rollback_steps(3)
-```
-
-### 思考模式可视化
-
-```python
-# 设置显示模式
-agent.set_thinking_style("chain")  # 或 "tree", "mindmap"
-
-# 打印思考过程
-agent.print_thinking()
-```
-
-### 多模型并行推理
-
-```python
-from deeptutor.integrations.nanobot.agent import AgentLoop
-
-result = await agent.run_parallel_models(
-    user_input="分析这个问题",
-    llm_clients=[client1, client2, client3],
-    aggregate_method="vote"  # "vote", "ensemble", "best"
-)
-```
-
-## 📊 本地模型管理
-
-### 列出可用模型
-
-```bash
-deeptutor model list
-```
-
-### 列出本地 Ollama 模型
-
-```bash
-deeptutor model ollama-list
-```
-
-### 切换模型
-
-```bash
-# 切换到 Ollama 的 llama3
-deeptutor model ollama-switch llama3
-
-# 切换到 SGLang
-deeptutor model sglang-switch deepseek-v4-flash
-```
-
-### 查看当前配置
-
-```bash
-deeptutor model current
-```
-
-## 📝 常见问题
-
-### 1. 如何添加新的 LLM 提供商？
-
-编辑 `deeptutor/services/llm/__init__.py` 和相应的适配器文件。
-
-### 2. 如何创建自定义工具？
-
-参考 `deeptutor/integrations/nanobot/agent/tools/` 目录下的现有工具，继承 `BaseTool` 类。
-
-### 3. 如何添加新的聊天通道？
-
-参考 `deeptutor/channels/` 目录，继承 `BaseChannel` 类。
-
-### 4. 如何启用 MCP？
-
-在 `.env` 中设置：
+### Slack
 
 ```env
-MCP_ENABLED=true
-MCP_SERVERS={"servers":[{"name":"filesystem","command":"npx","args":["-y","@modelcontextprotocol/server-filesystem","/path/to/dir"]}]}
+SLACK_ENABLED=true
+SLACK_BOT_TOKEN=xoxb-xxx
+SLACK_APP_TOKEN=xapp-xxx
 ```
 
-## 🤝 支持与反馈
+---
 
-- 提交 Issue：https://github.com/17625398/opendeepbot/issues
-- 查看文档：https://github.com/17625398/opendeepbot/wiki
+## 🐳 Docker 部署
 
-## 📄 许可证
+### 使用 Compose 一键启动
 
-本项目采用 MIT 许可证 - 查看 LICENSE 文件了解详情。
+```bash
+docker-compose up -d
+```
+
+### 查看日志
+
+```bash
+docker-compose logs -f deeptutor
+```
+
+### 停止服务
+
+```bash
+docker-compose down
+```
+
+---
+
+## 💻 CLI 命令行使用
+
+### 交互式聊天
+
+```bash
+python -m deeptutor chat
+```
+
+### 配置检查
+
+```bash
+python -m deeptutor config
+```
+
+### 启动通道
+
+```bash
+python -m deeptutor channels
+```
+
+---
+
+## 📚 更多资料
+
+- 完整文档: [DEVELOPMENT.md](./DEVELOPMENT.md)
+- 原项目文档: [README.md](./README.md)
+- 配置示例: [.env.example](./.env.example)
+
+---
+
+## 🔧 故障排查
+
+### 常见问题
+
+**Q: 配置验证失败？**
+
+A: 确保 `LLM_API_KEY` 已正确配置。
+
+**Q: 通道连接不上？**
+
+A: 检查对应平台的 Token 是否正确，确认端口没有被占用。
+
+**Q: 如何只启用一个通道测试？**
+
+A: 在 `.env` 中将其他通道设为 `false`，只保留一个通道为 `true`。
+
+### 获取帮助
+
+- 提交 Issue: [GitHub Issues](https://github.com/17625398/opendeepbot/issues)
