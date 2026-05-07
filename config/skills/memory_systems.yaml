@@ -1,0 +1,194 @@
+# 记忆系统配置
+# Memory Systems Configuration
+
+skill:
+  name: memory_systems
+  display_name: "记忆系统"
+  description: "管理长期和短期记忆的存储与检索"
+  version: "1.0.0"
+  enabled: true
+
+# 存储后端配置
+storage:
+  # 主存储后端
+  primary_backend: "vector_store"
+  
+  # 支持的存储后端
+  backends:
+    vector_store:
+      type: "chroma"
+      enabled: true
+      config:
+        collection_name: "agent_memories"
+        embedding_model: "text-embedding-3-small"
+        distance_metric: "cosine"
+        
+    key_value:
+      type: "redis"
+      enabled: true
+      config:
+        host: "localhost"
+        port: 6379
+        db: 0
+        password: null
+        ssl: false
+        
+    document_store:
+      type: "mongodb"
+      enabled: true
+      config:
+        uri: "mongodb://localhost:27017"
+        database: "agent_memory"
+        collection: "documents"
+        
+    file_system:
+      type: "local"
+      enabled: false
+      config:
+        base_path: "./data/memories"
+        format: "json"
+
+# TTL 配置
+ttl:
+  # 短期记忆 TTL（秒）
+  short_term: 3600  # 1小时
+  
+  # 中期记忆 TTL（秒）
+  medium_term: 86400  # 1天
+  
+  # 长期记忆 TTL（秒）
+  long_term: 2592000  # 30天
+  
+  # 永久记忆
+  permanent: 0  # 0 表示永不过期
+  
+  # 自动清理配置
+  cleanup:
+    enabled: true
+    interval: 3600  # 每小时检查一次
+    batch_size: 100
+
+# 容量限制
+capacity:
+  # 短期记忆最大条目数
+  short_term_max: 100
+  
+  # 中期记忆最大条目数
+  medium_term_max: 1000
+  
+  # 长期记忆最大条目数
+  long_term_max: 10000
+  
+  # 向量存储最大条目数
+  vector_store_max: 50000
+  
+  # 单条记忆最大大小（字节）
+  max_entry_size: 1048576  # 1MB
+  
+  # 总存储限制（字节）
+  total_storage_limit: 1073741824  # 1GB
+
+# 记忆层级
+memory_tiers:
+  working:
+    name: "工作记忆"
+    capacity: 7
+    ttl: 300  # 5分钟
+    priority: "high"
+    
+  short_term:
+    name: "短期记忆"
+    capacity: 100
+    ttl: 3600  # 1小时
+    priority: "medium"
+    
+  medium_term:
+    name: "中期记忆"
+    capacity: 1000
+    ttl: 86400  # 1天
+    priority: "low"
+    
+  long_term:
+    name: "长期记忆"
+    capacity: 10000
+    ttl: 2592000  # 30天
+    priority: "low"
+
+# 检索配置
+retrieval:
+  # 默认检索方法
+  default_method: "semantic"
+  
+  # 语义检索配置
+  semantic:
+    enabled: true
+    top_k: 5
+    similarity_threshold: 0.7
+    reranking_enabled: true
+    
+  # 关键词检索配置
+  keyword:
+    enabled: true
+    top_k: 10
+    fuzzy_matching: true
+    
+  # 混合检索配置
+  hybrid:
+    enabled: true
+    semantic_weight: 0.7
+    keyword_weight: 0.3
+    top_k: 10
+
+# 记忆增强
+enhancement:
+  # 自动摘要
+  summarization:
+    enabled: true
+    trigger_length: 500
+    summary_ratio: 0.3
+    
+  # 实体提取
+  entity_extraction:
+    enabled: true
+    model: "spacy"
+    
+  # 情感分析
+  sentiment_analysis:
+    enabled: true
+    
+  # 关键词提取
+  keyword_extraction:
+    enabled: true
+    top_k: 10
+
+# 遗忘策略
+forgetting:
+  enabled: true
+  
+  # 遗忘算法
+  algorithm: "lru"  # 可选: lru, lfu, fifo, adaptive
+  
+  # 自适应遗忘参数
+  adaptive:
+    access_frequency_weight: 0.4
+    recency_weight: 0.4
+    importance_weight: 0.2
+    
+  # 压缩策略
+  compression:
+    enabled: true
+    trigger_threshold: 0.8
+    target_ratio: 0.5
+
+# 同步配置
+sync:
+  enabled: true
+  
+  # 同步间隔（秒）
+  interval: 60
+  
+  # 冲突解决策略
+  conflict_resolution: "timestamp"
+  
+  # 批量同步大小
+  batch_size: 100

@@ -1,0 +1,207 @@
+# 工具设计配置
+# Tool Design Configuration
+
+skill:
+  name: tool_design
+  display_name: "工具设计"
+  description: "定义工具设计规范和验证规则"
+  version: "1.0.0"
+  enabled: true
+
+# 验证规则
+validation:
+  # 输入验证
+  input:
+    enabled: true
+    
+    # 参数验证规则
+    parameters:
+      # 必需参数检查
+      required_check: true
+      
+      # 类型检查
+      type_check: true
+      
+      # 范围检查
+      range_check: true
+      
+      # 格式检查
+      format_check: true
+      
+      # 枚举值检查
+      enum_check: true
+    
+    # 验证严格程度
+    strictness: "strict"  # 可选: strict, moderate, lenient
+    
+    # 自定义验证器
+    custom_validators:
+      enabled: true
+      max_validators: 10
+
+  # 输出验证
+  output:
+    enabled: true
+    
+    # 响应格式验证
+    format_validation: true
+    
+    # 数据类型验证
+    type_validation: true
+    
+    # 必需字段检查
+    required_fields_check: true
+    
+    # 空值检查
+    null_check: true
+
+  # 安全验证
+  security:
+    enabled: true
+    
+    # 输入消毒
+    sanitization:
+      enabled: true
+      remove_html: true
+      escape_special_chars: true
+      max_length: 10000
+    
+    # 注入检测
+    injection_detection:
+      enabled: true
+      check_sql: true
+      check_command: true
+      check_script: true
+
+# 文档模板
+documentation:
+  # 工具描述模板
+  tool_template: |
+    ## {tool_name}
+    
+    {description}
+    
+    ### 参数
+    {parameters}
+    
+    ### 返回值
+    {returns}
+    
+    ### 示例
+    {examples}
+    
+    ### 注意事项
+    {notes}
+
+  # 参数描述模板
+  parameter_template: |
+    - **{name}** ({type}): {description}
+      - 必需: {required}
+      - 默认值: {default}
+      - 约束: {constraints}
+
+  # 示例模板
+  example_template: |
+    ```{language}
+    {code}
+    ```
+    
+    输出:
+    ```
+    {output}
+    ```
+
+# 命名规范
+naming:
+  # 工具命名
+  tool:
+    convention: "snake_case"
+    prefix: ""
+    suffix: ""
+    max_length: 50
+    
+  # 参数命名
+  parameter:
+    convention: "snake_case"
+    max_length: 30
+    
+  # 常量命名
+  constant:
+    convention: "UPPER_SNAKE_CASE"
+
+# 设计模式
+patterns:
+  # 错误处理模式
+  error_handling:
+    pattern: "structured_exceptions"
+    include_stack_trace: false
+    include_error_code: true
+    
+  # 重试模式
+  retry:
+    enabled: true
+    max_attempts: 3
+    backoff_strategy: "exponential"
+    
+  # 缓存模式
+  caching:
+    enabled: true
+    strategy: "ttl"
+    default_ttl: 300
+    
+  # 限流模式
+  rate_limiting:
+    enabled: true
+    strategy: "token_bucket"
+    default_rate: 100
+
+# 性能要求
+performance:
+  # 最大执行时间（毫秒）
+  max_execution_time: 5000
+  
+  # 最大内存使用（MB）
+  max_memory_mb: 100
+  
+  # 并发限制
+  max_concurrency: 10
+  
+  # 超时配置
+  timeout:
+    connect: 5
+    read: 30
+    write: 30
+
+# 测试要求
+testing:
+  # 单元测试
+  unit_tests:
+    required: true
+    min_coverage: 80
+    
+  # 集成测试
+  integration_tests:
+    required: true
+    
+  # 性能测试
+  performance_tests:
+    required: false
+    benchmarks:
+      - latency
+      - throughput
+      - memory_usage
+
+# 版本控制
+versioning:
+  # 版本格式
+  format: "semantic"
+  
+  # 向后兼容
+  backward_compatibility:
+    required: true
+    deprecation_period: 90  # 天
+    
+  # 变更日志
+  changelog:
+    required: true
+    format: "keep_a_changelog"

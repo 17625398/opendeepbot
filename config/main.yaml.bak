@@ -1,0 +1,7 @@
+llm:
+  model: gpt-4o-mini
+  provider: openai
+paths:
+  user_data_dir: ./data/user
+  knowledge_bases_dir: ./data/knowledge_bases
+  user_log_dir: ./data/user/logs

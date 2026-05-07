@@ -1,0 +1,20 @@
+{
+  "description": "代码开发任务示例",
+  "requirements": [
+    "实现用户认证功能",
+    "编写单元测试",
+    "生成 API 文档",
+    "代码审查"
+  ],
+  "parameters": {
+    "language": "Python",
+    "framework": "FastAPI",
+    "features": ["JWT 认证", "OAuth2", "权限管理"],
+    "test_coverage": 80
+  },
+  "metadata": {
+    "priority": "high",
+    "deadline": "2026-03-15",
+    "reviewers": ["高级工程师", "安全团队"]
+  }
+}

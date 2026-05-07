@@ -1,0 +1,100 @@
+# WeKnora Configuration
+# This file configures the WeKnora integration with DeepTutor
+
+# Document Processing Configuration
+document_processing:
+  text:
+    enabled: true
+    max_chunk_size: 1000
+    chunk_overlap: 100
+  pdf:
+    enabled: true
+    use_ocr: false
+    max_pages: 100
+  docx:
+    enabled: true
+    include_images: false
+  image:
+    enabled: false
+    ocr_language: "zh-CN"
+    max_image_size: 1024
+
+# Vector Store Configuration
+vector_store:
+  memory:
+    enabled: true
+    max_size: 10000
+  chromadb:
+    enabled: false
+    persist_directory: "data/weknora/chromadb"
+    collection_name: "weknora"
+  pinecone:
+    enabled: false
+    api_key: "your-pinecone-api-key"
+    environment: "gcp-starter"
+    index_name: "weknora"
+  embedding_model: "qwen3-embedding:8b"
+  embedding_dim: 4096
+
+# Retrieval Configuration
+retrieval:
+  hybrid:
+    enabled: true
+    bm25_weight: 0.3
+    semantic_weight: 0.7
+  bm25:
+    enabled: true
+    k1: 1.5
+    b: 0.75
+  dense:
+    enabled: true
+    top_k: 10
+  default_top_k: 5
+
+# LLM Configuration
+llm:
+  default:
+    model: "glm-4.7-flash:q4_K_M"
+    temperature: 0.3
+    max_tokens: 1000
+  cot:
+    model: "qwen3:30b"
+    temperature: 0.7
+    max_tokens: 2000
+  api_key: "your-openai-api-key"
+  api_base: "http://192.168.0.32:11434/v1"
+
+# WeKnora Core Configuration
+weknora:
+  enabled: true
+  data_dir: "data/weknora"
+  log_level: "info"
+  enable_cache: true
+  cache_size: 1000
+  # WeKnora 外部服务配置
+  # 使用外部 WeKnora 服务 (http://192.168.0.39:8008)
+  api_base_url: "http://192.168.0.39:8008/api/v1"
+  api_key: "sk-rK8-xYC-2Fz-HRkok1RY1h56aHQjJ-DOGKpmYCEtAFhdhCse"
+  request_timeout_seconds: 30
+
+# ReRank Configuration
+rerank:
+  enabled: true
+  # 本地 ReRank 服务器配置
+  type: "local"  # 可选: local, external
+  local:
+    base_url: "http://localhost:8081"
+    api_key: ""
+    model: "simple-local-reranker"
+  external:
+    base_url: "https://api.cohere.com"
+    api_key: "your-cohere-api-key"
+    model: "rerank-multilingual-v2.0"
+  # 重排序参数
+  top_k: 5
+  threshold: 0.7
+  # 混合检索配置
+  hybrid:
+    enabled: true
+    vector_weight: 0.7
+    keyword_weight: 0.3

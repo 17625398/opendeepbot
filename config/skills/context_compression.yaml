@@ -1,0 +1,133 @@
+# 上下文压缩技能配置
+# Context Compression Skill Configuration
+
+skill:
+  name: context_compression
+  display_name: "上下文压缩"
+  description: "压缩和优化上下文内容，提高token使用效率"
+  version: "1.0.0"
+  enabled: true
+
+# 压缩级别配置
+compression_levels:
+  # 轻度压缩 - 保留完整语义
+  light:
+    enabled: true
+    target_ratio: 0.8
+    quality_threshold: 0.95
+    methods:
+      - whitespace_normalization
+      - redundant_phrase_removal
+    
+  # 中度压缩 - 平衡压缩率和质量
+  medium:
+    enabled: true
+    target_ratio: 0.6
+    quality_threshold: 0.85
+    methods:
+      - whitespace_normalization
+      - redundant_phrase_removal
+      - sentence_summarization
+      - entity_consolidation
+    
+  # 重度压缩 - 最大压缩
+  heavy:
+    enabled: true
+    target_ratio: 0.4
+    quality_threshold: 0.7
+    methods:
+      - whitespace_normalization
+      - redundant_phrase_removal
+      - sentence_summarization
+      - entity_consolidation
+      - aggressive_summarization
+      - detail_elimination
+
+# 压缩策略
+strategies:
+  # 自动选择策略
+  auto_select:
+    enabled: true
+    # 根据上下文大小自动选择压缩级别
+    thresholds:
+      light: 2000    # < 2000 tokens: 不压缩
+      medium: 4000   # 2000-4000: 轻度压缩
+      heavy: 6000    # 4000-6000: 中度压缩
+      critical: 8000 # > 6000: 重度压缩
+  
+  # 渐进式压缩
+  progressive:
+    enabled: true
+    # 逐步增加压缩强度直到满足要求
+    step_size: 0.1
+    max_iterations: 5
+  
+  # 智能压缩
+  intelligent:
+    enabled: true
+    # 基于内容重要性选择性压缩
+    preserve_code_blocks: true
+    preserve_quotes: true
+    preserve_key_facts: true
+    importance_threshold: 0.6
+
+# 质量阈值
+quality_thresholds:
+  # 语义保留度
+  semantic_preservation: 0.8
+  
+  # 信息完整性
+  information_integrity: 0.75
+  
+  # 可读性分数
+  readability_score: 0.7
+  
+  # 关键信息保留率
+  key_information_retention: 0.9
+
+# 压缩方法配置
+methods:
+  whitespace_normalization:
+    enabled: true
+    remove_extra_spaces: true
+    normalize_line_breaks: true
+    
+  redundant_phrase_removal:
+    enabled: true
+    remove_fillers: true
+    remove_repetitions: true
+    
+  sentence_summarization:
+    enabled: true
+    model: "extractive"
+    summary_ratio: 0.3
+    
+  entity_consolidation:
+    enabled: true
+    merge_similar_entities: true
+    create_entity_index: true
+    
+  aggressive_summarization:
+    enabled: true
+    model: "abstractive"
+    summary_ratio: 0.15
+    
+  detail_elimination:
+    enabled: true
+    remove_examples: false
+    remove_elaborations: true
+    keep_essential_only: true
+
+# 性能配置
+performance:
+  # 最大压缩时间（毫秒）
+  max_compression_time_ms: 1000
+  
+  # 异步压缩阈值（token 数）
+  async_threshold: 5000
+  
+  # 缓存配置
+  cache:
+    enabled: true
+    ttl_seconds: 300
+    max_size: 100

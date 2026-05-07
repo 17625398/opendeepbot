@@ -1,0 +1,304 @@
+# ==============================================================================
+# SuperMemory Configuration
+# 超级记忆系统配置 - 基于知识图谱的长期记忆管理
+# ==============================================================================
+
+# 存储配置
+storage:
+  # Neo4j 图数据库配置
+  neo4j:
+    enabled: true
+    uri: "${SUPERMEMORY_NEO4J_URI:-bolt://localhost:7687}"
+    user: "${SUPERMEMORY_NEO4J_USER:-neo4j}"
+    password: "${SUPERMEMORY_NEO4J_PASSWORD:-password}"
+    database: "${SUPERMEMORY_NEO4J_DATABASE:-supermemory}"
+    # 连接池配置
+    max_connection_pool_size: 50
+    connection_timeout: 30
+    # 加密配置
+    encrypted: false
+    trust: "TRUST_ALL_CERTIFICATES"
+
+  # 向量数据库配置 (用于语义检索)
+  vector_db:
+    provider: "qdrant"  # qdrant | chroma | milvus | pgvector
+    host: "${SUPERMEMORY_VECTOR_DB_HOST:-localhost}"
+    port: "${SUPERMEMORY_VECTOR_DB_PORT:-6333}"
+    collection_name: "supermemory_embeddings"
+    # 向量配置
+    vector_size: 1536  # 根据嵌入模型维度调整
+    distance: "Cosine"  # Cosine | Euclidean | Dot
+    # 优化配置
+    indexing_threshold: 10000
+    # 持久化配置
+    on_disk_payload: true
+
+# 处理配置
+processing:
+  # 嵌入模型配置
+  embedding:
+    provider: "openai"  # openai | azure_openai | huggingface | ollama
+    model: "${SUPERMEMORY_EMBEDDING_MODEL:-text-embedding-3-small}"
+    dimensions: 1536
+    batch_size: 100
+    # 缓存配置
+    cache_enabled: true
+    cache_dir: "./data/supermemory/embedding_cache"
+
+  # 文本分块配置
+  chunking:
+    # 分块策略: fixed | semantic | recursive
+    strategy: "semantic"
+    # 固定分块大小
+    chunk_size: 512
+    chunk_overlap: 50
+    # 语义分块配置
+    semantic:
+      # 使用 spaCy 进行句子分割
+      sentence_splitter: "spacy"
+      # 语义相似度阈值
+      similarity_threshold: 0.85
+      # 最大块大小
+      max_chunk_size: 1024
+      # 最小块大小
+      min_chunk_size: 128
+
+  # 实体提取配置
+  entity_extraction:
+    enabled: true
+    # 使用模型进行实体识别
+    model: "spacy"
+    # 支持的实体类型
+    entity_types:
+      - PERSON
+      - ORG
+      - GPE
+      - PRODUCT
+      - EVENT
+      - WORK_OF_ART
+      - LAW
+      - DATE
+      - TIME
+      - PERCENT
+      - MONEY
+      - QUANTITY
+      - ORDINAL
+      - CARDINAL
+    # 自定义实体模式
+    custom_patterns:
+      - name: "CASE_NUMBER"
+        pattern: "第[一二三四五六七八九十百千]+号"
+      - name: "LEGAL_ARTICLE"
+        pattern: "第[0-9]+条"
+
+# Agent 记忆配置
+agents:
+  # 最大并发 Agent 数量
+  max_concurrent_agents: 10
+  # 每个 Agent 的记忆容量
+  memory_capacity:
+    # 短期记忆 (会话级)
+    short_term:
+      max_messages: 50
+      max_tokens: 10000
+      ttl_minutes: 60
+    # 长期记忆 (知识图谱)
+    long_term:
+      max_nodes: 10000
+      max_relationships: 50000
+      # 记忆保留策略
+      retention_policy: "importance"  # importance | fifo | lru
+
+  # 记忆检索配置
+  retrieval:
+    # 混合检索权重
+    semantic_weight: 0.7
+    graph_weight: 0.3
+    # 检索结果数量
+    top_k: 10
+    # 相似度阈值
+    similarity_threshold: 0.75
+    # 图遍历深度
+    graph_hops: 2
+
+  # 记忆写入配置
+  writing:
+    # 自动保存间隔 (秒)
+    auto_save_interval: 300
+    # 批量写入大小
+    batch_size: 50
+    # 写入前确认
+    require_confirmation: false
+
+# 知识图谱配置
+knowledge_graph:
+  # 自动构建配置
+  auto_build:
+    enabled: true
+    # 触发构建的消息数阈值
+    trigger_threshold: 5
+    # 构建间隔 (分钟)
+    build_interval: 10
+    # 增量更新
+    incremental: true
+
+  # 实体链接配置
+  entity_linking:
+    enabled: true
+    # 链接策略: exact | fuzzy | embedding
+    strategy: "embedding"
+    # 相似度阈值
+    similarity_threshold: 0.85
+    # 最大候选数
+    max_candidates: 5
+
+  # 关系推断配置
+  relation_inference:
+    enabled: true
+    # 推断策略: rule_based | llm_based | hybrid
+    strategy: "hybrid"
+    # 置信度阈值
+    confidence_threshold: 0.7
+    # 支持的关系类型
+    relation_types:
+      - RELATED_TO
+      - PART_OF
+      - INSTANCE_OF
+      - CAUSES
+      - PREVENTS
+      - SYNONYM
+      - ANTONYM
+      - PREREQUISITE
+      - FOLLOWS
+
+  # 置信度阈值配置
+  confidence:
+    # 实体置信度
+    entity:
+      min_confidence: 0.6
+      high_confidence: 0.85
+    # 关系置信度
+    relation:
+      min_confidence: 0.5
+      high_confidence: 0.8
+    # 事实置信度
+    fact:
+      min_confidence: 0.7
+      high_confidence: 0.9
+
+  # 图谱优化配置
+  optimization:
+    # 自动合并相似实体
+    merge_similar_entities: true
+    merge_threshold: 0.9
+    # 清理孤立节点
+    cleanup_orphaned: true
+    orphan_threshold_days: 30
+    # 压缩历史版本
+    compress_history: true
+    compression_interval_days: 7
+
+# 记忆操作配置
+operations:
+  # 记忆存储
+  store:
+    enabled: true
+    # 存储前处理
+    preprocessing:
+      - deduplication
+      - summarization
+      - entity_extraction
+    # 存储后处理
+    postprocessing:
+      - index_update
+      - graph_update
+
+  # 记忆检索
+  retrieve:
+    enabled: true
+    # 检索模式
+    modes:
+      - semantic_search
+      - keyword_search
+      - graph_traversal
+      - temporal_search
+    # 结果排序
+    ranking: "hybrid"  # semantic | keyword | graph | hybrid
+
+  # 记忆更新
+  update:
+    enabled: true
+    # 更新策略
+    strategy: "merge"  # merge | replace | append
+    # 冲突解决
+    conflict_resolution: "timestamp"  # timestamp | priority | manual
+
+  # 记忆删除
+  delete:
+    enabled: true
+    # 软删除
+    soft_delete: true
+    retention_days: 30
+    # 级联删除
+    cascade: true
+
+# 性能配置
+performance:
+  # 缓存配置
+  cache:
+    enabled: true
+    type: "redis"  # redis | memory | disk
+    ttl_seconds: 3600
+    max_size: 10000
+
+  # 批处理配置
+  batch:
+    enabled: true
+    max_batch_size: 100
+    flush_interval_ms: 1000
+
+  # 异步处理
+  async_processing:
+    enabled: true
+    max_workers: 4
+    queue_size: 1000
+
+# 监控配置
+monitoring:
+  enabled: true
+  # 指标收集
+  metrics:
+    - memory_usage
+    - query_latency
+    - graph_size
+    - cache_hit_rate
+  # 日志级别
+  log_level: "INFO"
+  # 健康检查
+  health_check:
+    enabled: true
+    interval_seconds: 60
+
+# 安全配置
+security:
+  # 访问控制
+  access_control:
+    enabled: true
+    # 用户隔离
+    user_isolation: true
+    # 角色权限
+    roles:
+      - name: "admin"
+        permissions: ["read", "write", "delete", "admin"]
+      - name: "user"
+        permissions: ["read", "write"]
+      - name: "guest"
+        permissions: ["read"]
+
+  # 数据加密
+  encryption:
+    enabled: false
+    # 加密字段
+    fields:
+      - content
+      - metadata

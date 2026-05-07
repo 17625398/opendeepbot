@@ -1,0 +1,44 @@
+# DeepTutor Hermes 集成配置
+# 所有功能默认关闭！向后兼容优先！
+hermes:
+  enabled:  true #开关：必须显式启用
+  version: 0.1.0
+
+  # 技能系统
+  skills:
+    enabled: true
+    auto_create: true
+    hub_url: "https://agentskills.io"
+    data_dir: "./data/hermes/skills"
+
+  # 增强型 MCP
+  mcp:
+    enabled: true
+    servers_config: "./data/hermes/mcp_servers.json"
+
+  # 记忆系统
+  memory:
+    enabled: true
+    honcho_enabled: true  # 隐私敏感，默认关闭
+    data_dir: "./data/hermes/memory"
+
+  # 消息网关（Phase 2+）
+  gateway:
+    enabled: true
+    platforms: []
+
+  # 定时任务（Phase 2+）
+  cron:
+    enabled: true
+
+  # 知识库系统（新增）
+  knowledgebase:
+    enabled: false  # 默认关闭，需要用户显式启用
+    directories:
+      - "./data/hermes/knowledgebase"  # 默认知识库路径
+    auto_retrieve: true
+    max_context_chunks: 8
+    embedding_model: "local"
+    reindex_on_change: true
+    data_dir: "./data/hermes/knowledgebase"
+    tutorials_dir: "./data/hermes/tutorials"  # 教程进度存储位置

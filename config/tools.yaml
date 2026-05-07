@@ -1,0 +1,51 @@
+# 工具配置
+tools:
+  # 代码执行配置
+  code:
+    sandbox: "docker"  # docker | pyodide | local
+    
+    docker:
+      image: "python:3.11-slim"
+      timeout: 30
+      memory_limit: "512m"
+      cpu_limit: "1.0"
+      allowed_packages:
+        - numpy
+        - pandas
+        - matplotlib
+        - sympy
+        - scikit-learn
+        
+    pyodide:
+      index_url: "https://cdn.jsdelivr.net/pyodide/v0.29.3/full/"
+      packages:
+        - numpy
+        - pandas
+        - matplotlib
+        
+    local:
+      timeout: 10
+      max_memory: "256m"
+
+  # PDF 解析配置
+  pdf:
+    parser: "mineru"  # mineru | pymupdf
+    extract_images: true
+    extract_tables: true
+    
+  # 浏览器自动化配置
+  browser:
+    provider: "selenium"  # selenium | playwright
+    headless: true
+    timeout: 30
+    
+  # 文档处理配置
+  document:
+    chunk_size: 1000
+    chunk_overlap: 200
+    supported_formats:
+      - pdf
+      - docx
+      - txt
+      - md
+      - html

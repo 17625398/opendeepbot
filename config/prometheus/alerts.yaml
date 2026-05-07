@@ -1,0 +1,247 @@
+# PromQL Alert Rules
+# Prometheus告警规则配置
+
+groups:
+  - name: deep_tutor_alerts
+    interval: 30s
+    rules:
+      # API错误率
+      - alert: HighErrorRate
+        expr: |
+          sum(rate(http_requests_total{status=~"5.."}[5m])) by (endpoint) 
+          / 
+          sum(rate(http_requests_total[5m])) by (endpoint) 
+          > 0.05
+        for: 5m
+        labels:
+          severity: critical
+          team: backend
+        annotations:
+          summary: "API错误率过高"
+          description: "端点 {{ $labels.endpoint }} 的错误率在过去5分钟内超过5% (当前值: {{ $value | humanizePercentage }})"
+
+      # 响应时间过长
+      - alert: HighResponseTime
+        expr: |
+          histogram_quantile(0.95, 
+            sum(rate(http_request_duration_seconds_bucket[5m])) by (endpoint, le)
+          ) > 2
+        for: 5m
+        labels:
+          severity: warning
+          team: backend
+          type: performance
+        annotations:
+          summary: "API响应时间过长"
+          description: "端点 {{ $labels.endpoint }} 的p95响应时间超过2秒 (当前值: {{ $value }}s)"
+
+      # 请求速率过低
+      - alert: LowRequestRate
+        expr: |
+          sum(rate(http_requests_total[5m])) < 0.1
+        for: 10m
+        labels:
+          severity: warning
+          team: backend
+          type: availability
+        annotations:
+          summary: "请求速率过低"
+          description: "请求速率为 {{ $value | humanize }}/s,可能服务异常"
+
+      # Agent执行失败率过高
+      - alert: HighAgentFailureRate
+        expr: |
+          sum(rate(agent_executions_total{status="error"}[5m])) by (agent_type)
+          /
+          sum(rate(agent_executions_total[5m])) by (agent_type)
+          > 0.1
+        for: 5m
+        labels:
+          severity: warning
+          team: platform
+          type: agent
+        annotations:
+          summary: "Agent失败率过高"
+          description: "Agent {{ $labels.agent_type }} 的失败率超过10% (当前值: {{ $value | humanizePercentage }})"
+
+      # RAG查询失败率过高
+      - alert: HighRAGFailureRate
+        expr: |
+          sum(rate(rag_queries_total{status="error"}[5m])) by (mode)
+          /
+          sum(rate(rag_queries_total[5m])) by (mode)
+          > 0.2
+        for: 5m
+        labels:
+          severity: warning
+          team: platform
+          type: rag
+        annotations:
+          summary: "RAG查询失败率过高"
+          description: "RAG模式 {{ $labels.mode }} 的失败率超过20% (当前值: {{ $value | humanizePercentage }})"
+
+      # 内存使用率过高
+      - alert: HighMemoryUsage
+        expr: |
+          process_memory_bytes 
+          / 
+          spec_memory_limit_bytes
+          > 0.9
+        for: 5m
+        labels:
+          severity: warning
+          team: ops
+          type: resource
+        annotations:
+          summary: "内存使用率过高"
+          description: "内存使用率超过90% (当前值: {{ $value | humanizePercentage }})"
+
+      # CPU使用率过高
+      - alert: HighCPUUsage
+        expr: |
+          process_cpu_percent > 80
+        for: 10m
+        labels:
+          severity: warning
+          team: ops
+          type: resource
+        annotations:
+          summary: "CPU使用率过高"
+          description: "CPU使用率超过80% (当前值: {{ $value }}%)"
+
+      # 磁盘空间不足
+      - alert: LowDiskSpace
+        expr: |
+          disk_usage_bytes{mount_point="/"}
+          /
+          disk_capacity_bytes
+          > 0.85
+        for: 5m
+        labels:
+          severity: critical
+          team: ops
+          type: storage
+        annotations:
+          summary: "磁盘空间不足"
+          description: "根分区磁盘使用率超过85% (当前值: {{ $value | humanizePercentage }})"
+          
+      # 缓存命中率过低
+      - alert: LowCacheHitRate
+        expr: |
+          (
+            sum(cache_hits_total) 
+            / 
+            (sum(cache_hits_total) + sum(cache_misses_total))
+          ) < 0.5
+        for: 15m
+        labels:
+          severity: warning
+          team: platform
+          type: performance
+        annotations:
+          summary: "缓存命中率过低"
+          description: "整体缓存命中率低于50% (当前值: {{ $value | humanizePercentage }})"
+
+      # LLM调用失败率过高
+      - alert: HighLLMFailureRate
+        expr: |
+          sum(rate(llm_calls_total{status="error"}[5m])) by (model_name)
+          /
+          sum(rate(llm_calls_total[5m])) by (model_name)
+          > 0.1
+        for: 5m
+        labels:
+          severity: critical
+          team: platform
+          type: llm
+        annotations:
+          summary: "LLM调用失败率过高"
+          description: "模型 {{ $labels.model_name }} 的失败率超过10%"
+
+      # 活跃连接数过多
+      - alert: HighActiveConnections
+        expr: |
+          concurrent_connections > 1000
+        for: 5m
+        labels:
+          severity: critical
+          team: backend
+          type: load
+        annotations:
+          summary: "活跃连接数过多"
+          description: "活跃连接数超过1000 (当前值: {{ $value }})"
+
+      # 服务不可用
+      - alert: ServiceDown
+        expr: |
+          up{job="deeptutor"} == 0
+        for: 1m
+        labels:
+          severity: critical
+          team: ops
+          type: availability
+        annotations:
+          summary: "服务不可用"
+          description: "DeepTutor服务已停止响应"
+
+  - name: deep_tutor_predictive_alerts
+    interval: 1m
+    rules:
+      # 预测5分钟内的内存不足
+      - alert: PredictedMemoryExhaustion
+        expr: |
+          predict_linear(process_memory_bytes[10m], 300) 
+          > 
+          spec_memory_limit_bytes
+        for: 5m
+        labels:
+          severity: warning
+          team: ops
+          type: predictive
+        annotations:
+          summary: "预测5分钟后内存不足"
+          description: "基于当前趋势,预计5分钟后内存将耗尽"
+
+      # 预测1小时内的磁盘空间不足
+      - alert: PredictedDiskExhaustion
+        expr: |
+          predict_linear(disk_usage_bytes{mount_point="/"}[30m], 3600) 
+          > 
+          disk_capacity_bytes * 0.9
+        for: 10m
+        labels:
+          severity: warning
+          team: ops
+          type: predictive
+        annotations:
+          summary: "预测1小时后磁盘空间不足"
+          description: "基于当前趋势,预计1小时后磁盘使用率将超过90%"
+
+  - name: deep_tutor_business_alerts
+    interval: 5m
+    rules:
+      # 每日Agent执行次数异常
+      - alert: LowAgentExecution
+        expr: |
+          increase(agent_executions_total[1h]) < 10
+        for: 1h
+        labels:
+          severity: warning
+          team: business
+          type: usage
+        annotations:
+          summary: "Agent执行次数过低"
+          description: "过去1小时内Agent执行次数不足10次"
+
+      # RAG查询次数异常
+      - alert: LowRAGQuery
+        expr: |
+          increase(rag_queries_total[1h]) < 5
+        for: 1h
+        labels:
+          severity: warning
+          team: business
+          type: usage
+        annotations:
+          summary: "RAG查询次数过低"
+          description: "过去1小时内RAG查询次数不足5次"

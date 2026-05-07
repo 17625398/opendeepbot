@@ -1,0 +1,42 @@
+# 搜索服务配置
+providers:
+  perplexity:
+    enabled: true
+    api_key: "${PERPLEXITY_API_KEY}"
+    model: "sonar-pro"  # sonar | sonar-pro | sonar-reasoning
+    max_results: 10
+    
+  tavily:
+    enabled: false
+    api_key: "${TAVILY_API_KEY}"
+    max_results: 10
+    include_answer: true
+    
+  serper:
+    enabled: false
+    api_key: "${SERPER_API_KEY}"
+    max_results: 10
+    
+  jina:
+    enabled: false
+    api_key: "${JINA_API_KEY}"
+    max_results: 10
+    
+  exa:
+    enabled: false
+    api_key: "${EXA_API_KEY}"
+    max_results: 10
+    
+  baidu:
+    enabled: false
+    api_key: "${BAIDU_API_KEY}"
+    secret_key: "${BAIDU_SECRET_KEY}"
+    max_results: 10
+
+# 默认搜索提供商
+default_provider: "perplexity"
+
+# 搜索缓存
+cache:
+  enabled: true
+  ttl: 300  # 5分钟

@@ -1,0 +1,19 @@
+# 嵌入模型服务配置
+providers:
+  openai:
+    enabled: true
+    model: "text-embedding-3-large"
+    dimensions: 3072
+    api_key: "${EMBEDDING_API_KEY}"
+    base_url: "${EMBEDDING_BASE_URL:-https://api.openai.com/v1}"
+    
+  huggingface:
+    enabled: false
+    model: "BAAI/bge-large-zh-v1.5"
+    device: "cuda"  # cuda | cpu
+    normalize_embeddings: true
+
+cache:
+  enabled: true
+  type: "redis"  # redis | memory
+  ttl: 3600  # 缓存时间（秒）

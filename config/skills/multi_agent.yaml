@@ -1,0 +1,179 @@
+# 多 Agent 模式配置
+# Multi-Agent Mode Configuration
+
+skill:
+  name: multi_agent
+  display_name: "多 Agent 协作"
+  description: "支持多个 Agent 协同工作的配置"
+  version: "1.0.0"
+  enabled: true
+
+# 通信配置
+communication:
+  # 通信协议
+  protocol: "message_bus"
+  
+  # 消息格式
+  message_format: "json"
+  
+  # 序列化配置
+  serialization:
+    format: "json"
+    compression: true
+    compression_threshold_bytes: 1024
+  
+  # 超时配置
+  timeouts:
+    # 默认请求超时（秒）
+    request: 30
+    
+    # 连接超时（秒）
+    connection: 5
+    
+    # 响应等待超时（秒）
+    response: 60
+    
+    # 心跳超时（秒）
+    heartbeat: 10
+    
+    # 任务分配超时（秒）
+    task_assignment: 15
+
+# 重试配置
+retry:
+  enabled: true
+  
+  # 最大重试次数
+  max_attempts: 3
+  
+  # 重试间隔（秒）
+  backoff:
+    initial: 1
+    multiplier: 2
+    max: 30
+    jitter: true
+  
+  # 可重试的错误类型
+  retryable_errors:
+    - timeout
+    - connection_error
+    - service_unavailable
+    - rate_limit
+
+# Agent 协调配置
+coordination:
+  # 协调模式
+  mode: "hierarchical"  # 可选: hierarchical, flat, mesh
+  
+  # 领导者选举
+  leader_election:
+    enabled: true
+    method: "consensus"
+    timeout: 10
+  
+  # 负载均衡
+  load_balancing:
+    enabled: true
+    strategy: "round_robin"  # 可选: round_robin, least_connections, weighted
+    health_check_interval: 30
+  
+  # 任务分配
+  task_distribution:
+    strategy: "capability_based"
+    fallback_enabled: true
+    max_retries: 2
+
+# Agent 发现配置
+discovery:
+  enabled: true
+  
+  # 发现机制
+  mechanism: "registry"
+  
+  # 注册表配置
+  registry:
+    ttl: 300
+    refresh_interval: 60
+    health_check_interval: 30
+  
+  # 服务发现超时
+  timeout: 5
+
+# 容错配置
+fault_tolerance:
+  enabled: true
+  
+  # 断路器配置
+  circuit_breaker:
+    enabled: true
+    failure_threshold: 5
+    recovery_timeout: 60
+    half_open_max_calls: 3
+  
+  # 故障转移
+  failover:
+    enabled: true
+    max_failover_attempts: 2
+    failover_timeout: 10
+  
+  # 状态同步
+  state_sync:
+    enabled: true
+    sync_interval: 30
+    conflict_resolution: "last_write_wins"
+
+# 安全配置
+security:
+  # 认证配置
+  authentication:
+    enabled: true
+    method: "token"
+    token_ttl: 3600
+  
+  # 授权配置
+  authorization:
+    enabled: true
+    policy: "role_based"
+  
+  # 加密配置
+  encryption:
+    enabled: true
+    algorithm: "AES-256-GCM"
+    key_rotation_interval: 86400
+
+# 监控配置
+monitoring:
+  enabled: true
+  
+  # 指标收集
+  metrics:
+    - message_latency
+    - agent_availability
+    - task_success_rate
+    - communication_errors
+    - throughput
+  
+  # 健康检查
+  health_check:
+    enabled: true
+    interval: 30
+    timeout: 5
+    unhealthy_threshold: 3
+    healthy_threshold: 2
+
+# 资源限制
+resource_limits:
+  # 最大并发连接数
+  max_connections: 100
+  
+  # 最大消息队列大小
+  max_queue_size: 1000
+  
+  # 最大消息大小（字节）
+  max_message_size: 1048576  # 1MB
+  
+  # 速率限制
+  rate_limit:
+    enabled: true
+    requests_per_second: 100
+    burst_size: 150

@@ -1,0 +1,66 @@
+# GraphRAG 配置文件
+
+# 文档处理配置
+document_processor:
+  chunk_size: 1200
+  chunk_overlap: 100
+  min_chunk_size: 100
+
+# 实体提取配置
+entity_extraction:
+  max_entities_per_chunk: 50
+  use_llm: true
+  use_heuristic_fallback: true
+
+# 关系映射配置
+relationship_mapping:
+  max_relationships_per_chunk: 30
+  use_llm: true
+  use_heuristic: true
+
+# 查询引擎配置
+query_engine:
+  default_mode: "hybrid"
+  top_k: 5
+  cache_enabled: true
+  cache_size: 1000
+  cache_ttl: 1800
+
+# 向量存储配置
+vector_store:
+  dimension: 1536
+  similarity_threshold: 0.7
+
+# 知识图谱配置
+knowledge_graph:
+  storage_type: "memory"
+  enable_incremental_update: true
+
+# 性能优化配置
+performance:
+  enable_cache: true
+  cache_size: 1000
+  cache_ttl: 3600
+  enable_index: true
+  batch_size: 100
+  query_timeout: 30
+  extraction_timeout: 60
+
+# 持久化配置
+persistence:
+  storage_dir: "./graphrag_storage"
+  auto_backup: true
+  backup_count: 10
+
+# PDF 处理配置
+pdf_processing:
+  enable_ocr: true
+  enable_visual_understanding: true
+  extract_images: true
+  max_pages: 100
+
+# 可视化配置
+visualization:
+  max_nodes: 100
+  default_format: "visjs"
+  enable_interactive: true

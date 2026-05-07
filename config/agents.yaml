@@ -1,0 +1,11 @@
+# Agent 配置
+agents:
+  solve:
+    enabled: true
+    temperature: 0.5
+    max_tokens: 8000
+    
+  research:
+    enabled: true
+    temperature: 0.5
+    max_tokens: 12000

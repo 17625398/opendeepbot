@@ -1,0 +1,30 @@
+agents:
+  defaults:
+    model: qwen3:30b
+autoReply: true
+channels:
+  qq:
+    allowFrom: []
+    appId: '102856103'
+    enabled: true
+    mode: bot
+    sandbox: true
+    secret: IUhv9OeuBTl4Oi3Pl8WuJj9a2UxQuPuQ
+    token: dzoYH1RkaI2joctgeQlZSswrm0F6yVkK
+maxTokens: 2048
+nanobot:
+  dataDir: data/nanobot
+  enabled: true
+  gatewayPort: 8080
+  logLevel: info
+providers:
+  ollama:
+    apiBase: http://192.168.0.39:11434/v1
+    model: lukey03/qwen3.5-9b-abliterated-vision:latest
+saveHistory: true
+systemPrompt: You are nanobot, a lightweight AI assistant integrated into DeepTutor.
+  Provide helpful and concise responses.
+temperature: 0.7
+tools:
+  web:
+    search: {}

@@ -1,0 +1,186 @@
+agents:
+  chat:
+    enabled: true
+    max_retries: 2
+    max_tokens: 4000
+    temperature: 0.7
+    timeout: 60
+  question:
+    enabled: true
+    max_retries: 2
+    max_tokens: 4000
+    temperature: 0.3
+    timeout: 60
+  research:
+    enabled: true
+    max_retries: 3
+    max_tokens: 12000
+    temperature: 0.5
+    timeout: 180
+  solve:
+    enabled: true
+    max_retries: 3
+    max_tokens: 8000
+    temperature: 0.5
+    timeout: 120
+app_name: DeepTutor
+cache:
+  l1:
+    capacity: 100
+    enabled: true
+    ttl: 60
+  l2:
+    capacity: 10000
+    enabled: false
+    ttl: 3600
+  redis_db: '0'
+  redis_host: localhost
+  redis_password: ''
+  redis_port: '6379'
+debug: true
+embedding:
+  cache_enabled: true
+  cache_ttl: 3600
+  cache_type: redis
+  default_provider: openai
+  providers:
+    huggingface:
+      api_key: ''
+      base_url: ''
+      device: cuda
+      dimensions: 1024
+      enabled: false
+      model: BAAI/bge-large-zh-v1.5
+      normalize_embeddings: true
+    openai:
+      api_key: '}'
+      base_url: https://api.openai.com/v1
+      device: cpu
+      dimensions: 3072
+      enabled: true
+      model: text-embedding-3-large
+      normalize_embeddings: true
+environment: development
+llm:
+  default_model: gemma4:e4b
+  default_provider: ollama
+  providers:
+    anthropic:
+      api_key: ''
+      base_url: https://api.anthropic.com
+      enabled: true
+      max_retries: 3
+      models:
+      - claude-3-opus-20240229
+      - claude-3-sonnet-20240229
+      - claude-3-haiku-20240307
+      timeout: 60
+    azure:
+      api_key: ''
+      base_url: ''
+      enabled: false
+      max_retries: 3
+      models:
+      - gpt-4
+      timeout: 60
+    ollama:
+      api_key: ''
+      base_url: http://192.168.0.32:11434/v1
+      enabled: true
+      max_retries: 3
+      models:
+      - huihui_ai/qwen3.5-abliterated:35b
+      - fredrezones55/qwen3.5-opus:27b
+      - gemma4:e4b
+      timeout: 60
+    openai:
+      api_key: ''
+      base_url: https://api.openai.com/v1
+      enabled: true
+      max_retries: 3
+      models:
+      - gpt-4o
+      - gpt-4-turbo
+      - gpt-3.5-turbo
+      timeout: 60
+logging:
+  backup_count: 5
+  console_output: true
+  file_rotation: false
+  format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+  level: DEBUG
+  max_file_size: 10MB
+  save_to_file: true
+memory:
+  api_key: ''
+  api_url: http://localhost:8001/api/v1
+  enabled: true
+  graceful_degradation: true
+  max_retries: 2
+  provider: evermemos
+  timeout: 10
+paths:
+  data_dir: ./data
+  knowledge_bases_dir: ./data/knowledge_bases
+  logs_dir: ./data/logs
+  temp_dir: ./data/temp
+  user_data_dir: ./data/user
+  vector_db_dir: ./data/vector_db
+security:
+  access_token_expire_minutes: 60
+  allowed_hosts:
+  - localhost
+  - 127.0.0.1
+  - 192.168.*
+  - 10.*
+  cors_origins:
+  - http://localhost:3000
+  - http://localhost:3782
+  - http://127.0.0.1:3000
+  - http://127.0.0.1:3782
+  - http://192.168.*
+  enable_mfa: false
+  jwt_algorithm: HS256
+  jwt_secret: ''
+  password_min_length: 8
+  refresh_token_expire_days: 7
+tools:
+  code:
+    allowed_packages:
+    - numpy
+    - pandas
+    - matplotlib
+    - sympy
+    - scikit-learn
+    docker_cpu_limit: '1.0'
+    docker_image: python:3.11-slim
+    docker_memory_limit: 512m
+    docker_timeout: 30
+    sandbox: docker
+  document_chunk_overlap: 200
+  document_chunk_size: 1000
+  pdf:
+    extract_images: true
+    extract_tables: true
+    parser: mineru
+vector_db:
+  distance_metric: cosine
+  embedding_dim: 3072
+  index:
+    batch_size: 100
+    hnsw_ef_construction: 200
+    hnsw_ef_search: 100
+    hnsw_m: 16
+    optimize_threshold: 10000
+  storage:
+    chroma_path: ./data/vector_db/chroma
+    faiss_index_type: IndexFlatIP
+    milvus_host: localhost
+    milvus_password: ''
+    milvus_port: '19530'
+    milvus_user: ''
+    pgvector_connection: mysql+aiomysql://root:123456@192.168.0.230:3306/deepbot
+    provider: chroma
+    qdrant_api_key: ''
+    qdrant_url: http://localhost:6333
+version: 0.6.0

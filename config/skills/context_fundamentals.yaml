@@ -1,0 +1,105 @@
+# 上下文基础技能配置
+# Context Fundamentals Skill Configuration
+
+skill:
+  name: context_fundamentals
+  display_name: "上下文基础"
+  description: "管理对话上下文的基础技能，包括退化检测和上下文分析"
+  version: "1.0.0"
+  enabled: true
+
+# 退化检测配置
+degradation_detection:
+  enabled: true
+  
+  # 检测阈值
+  thresholds:
+    # 上下文窗口使用率阈值（百分比）
+    context_window_usage: 85
+    
+    # 响应质量下降阈值
+    response_quality_drop: 0.3
+    
+    # 重复内容阈值（百分比）
+    repetition_ratio: 0.4
+    
+    # 相关性下降阈值
+    relevance_drop: 0.25
+    
+    # token 使用效率阈值
+    token_efficiency: 0.5
+  
+  # 检测参数
+  parameters:
+    # 滑动窗口大小（轮数）
+    sliding_window_size: 5
+    
+    # 最小检测样本数
+    min_samples: 3
+    
+    # 检测间隔（秒）
+    check_interval: 10
+    
+    # 连续触发次数才确认退化
+    consecutive_triggers: 2
+
+# 上下文分析配置
+context_analysis:
+  enabled: true
+  
+  # 分析参数
+  parameters:
+    # 最大分析深度（消息数）
+    max_depth: 50
+    
+    # 主题提取敏感度
+    topic_extraction_sensitivity: 0.7
+    
+    # 实体识别阈值
+    entity_recognition_threshold: 0.6
+    
+    # 语义相似度阈值
+    semantic_similarity_threshold: 0.75
+  
+  # 分析维度
+  dimensions:
+    topic_coherence: true
+    entity_tracking: true
+    sentiment_analysis: true
+    intent_classification: true
+    temporal_analysis: true
+
+# 上下文管理配置
+context_management:
+  # 最大上下文保留轮数
+  max_turns: 20
+  
+  # 上下文摘要触发阈值（token 数）
+  summarization_trigger: 3000
+  
+  # 自动清理配置
+  auto_cleanup:
+    enabled: true
+    # 保留最近 N 轮完整对话
+    preserve_recent_turns: 5
+    # 清理间隔（分钟）
+    cleanup_interval: 30
+
+# 性能监控
+monitoring:
+  enabled: true
+  
+  # 监控指标
+  metrics:
+    - context_size
+    - token_count
+    - response_latency
+    - quality_score
+    - degradation_events
+  
+  # 告警阈值
+  alerts:
+    context_size_warning: 4000
+    context_size_critical: 6000
+    latency_warning_ms: 2000
+    latency_critical_ms: 5000

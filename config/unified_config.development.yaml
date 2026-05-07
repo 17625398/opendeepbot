@@ -1,0 +1,37 @@
+# DeepTutor 开发环境配置
+# 覆盖默认配置以优化开发体验
+
+environment: "development"
+debug: true
+
+# ==================== 开发环境缓存配置 ====================
+cache:
+  l1:
+    enabled: true
+    capacity: 100
+    ttl: 60  # 1分钟（便于调试时快速看到变化）
+  l2:
+    enabled: false  # 开发环境禁用 Redis，简化设置
+
+# ==================== 开发环境日志配置 ====================
+logging:
+  level: "DEBUG"
+  save_to_file: true
+  console_output: true
+  file_rotation: false  # 开发环境不轮转，便于查看完整日志
+
+# ==================== 开发环境安全配置 ====================
+security:
+  access_token_expire_minutes: 60  # 开发环境 token 有效期更长，便于调试
+  enable_mfa: false  # 开发环境禁用 MFA
+  allowed_hosts:
+    - "localhost"
+    - "127.0.0.1"
+    - "192.168.*"
+    - "10.*"
+  cors_origins:
+    - "http://localhost:3000"
+    - "http://localhost:3782"
+    - "http://127.0.0.1:3000"
+    - "http://127.0.0.1:3782"
+    - "http://192.168.*"

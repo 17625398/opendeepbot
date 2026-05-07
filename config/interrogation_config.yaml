@@ -1,0 +1,58 @@
+# 公安案件笔录分析系统配置
+
+interrogation:
+  # 输出目录
+  output_dir: ./data/user/interrogation
+  
+  # 知识库配置
+  knowledge_bases:
+    legal_regulations: legal_regulations  # 法律法规知识库名称
+    case_examples: case_examples          # 案例知识库名称
+    templates: interrogation_templates    # 模板知识库名称
+  
+  # Agent配置
+  agents:
+    extract_agent:
+      enabled: true
+      max_retries: 3
+    legal_match_agent:
+      enabled: true
+      max_retries: 2
+      rag_top_k: 10
+    quality_agent:
+      enabled: true
+      max_retries: 2
+    relation_agent:
+      enabled: true
+      max_retries: 2
+    report_agent:
+      enabled: true
+      max_retries: 2
+  
+  # 质量评估权重
+  quality_weights:
+    completeness: 0.3    # 完整性权重
+    standardization: 0.25 # 规范性权重
+    logic: 0.25          # 逻辑性权重
+    legality: 0.2        # 合法性权重
+  
+  # RAG检索配置
+  rag:
+    mode: hybrid         # 检索模式：naive/hybrid
+    top_k: 5           # 检索结果数量
+  
+  # 文件上传配置
+  upload:
+    allowed_extensions:
+      - .pdf
+      - .doc
+      - .docx
+      - .txt
+    max_file_size: 50MB  # 最大文件大小
+  
+  # 报告生成配置
+  report:
+    include_charts: true      # 是否包含图表
+    include_legal_refs: true  # 是否包含法条引用
+    include_suggestions: true # 是否包含改进建议
+    format: markdown          # 报告格式：markdown/html/pdf

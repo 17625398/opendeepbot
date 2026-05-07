@@ -1,0 +1,58 @@
+# Trae Agent 配置文件
+# AI 编程助手配置
+
+# 模型配置
+model:
+  # LLM 提供商: openai, anthropic, azure, local
+  provider: "openai"
+  # 模型名称
+  name: "gpt-4o"
+  # API 密钥 (建议通过环境变量 TRAE_AGENT_API_KEY 设置)
+  api_key: "${TRAE_AGENT_API_KEY}"
+  # API 基础 URL (可选)
+  base_url: "${TRAE_AGENT_BASE_URL}"
+  # 温度参数 (0.0 - 1.0)
+  temperature: 0.5
+  # 最大 token 数
+  max_tokens: 8000
+  # 超时时间 (秒)
+  timeout: 120
+
+# 任务配置
+task:
+  # 最大并发任务数
+  max_concurrent: 5
+  # 任务超时时间 (秒)
+  timeout: 300
+  # 重试次数
+  retry_count: 3
+  # 重试延迟 (秒)
+  retry_delay: 2
+
+# 上下文配置
+context:
+  # 最大上下文文件数
+  max_files: 10
+  # 每文件最大行数
+  max_lines_per_file: 500
+  # 缓存过期时间 (分钟)
+  cache_ttl: 60
+
+# 代码分析配置
+analysis:
+  # 默认启用的分析类型
+  default_types:
+    - general
+    - security
+    - style
+  # 严重性阈值 (info, warning, error, critical)
+  severity_threshold: "info"
+  # 最大问题数
+  max_issues: 100
+
+# 日志配置
+logging:
+  # 日志级别: DEBUG, INFO, WARNING, ERROR
+  level: "INFO"
+  # 日志格式
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"

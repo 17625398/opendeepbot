@@ -1,0 +1,19 @@
+{
+  "description": "数据分析任务示例",
+  "requirements": [
+    "加载并清洗数据",
+    "执行探索性数据分析",
+    "生成可视化图表",
+    "输出分析报告"
+  ],
+  "parameters": {
+    "dataset": "sales_data.csv",
+    "columns": ["date", "product", "revenue", "region"],
+    "analysis_type": "trend_analysis"
+  },
+  "metadata": {
+    "priority": "high",
+    "deadline": "2026-03-10",
+    "stakeholders": ["产品团队", "销售团队"]
+  }
+}

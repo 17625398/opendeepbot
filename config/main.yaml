@@ -1,0 +1,238 @@
+system:
+  language: zh
+paths:
+  user_data_dir: ./data/user
+  knowledge_bases_dir: ./data/knowledge_bases
+  user_log_dir: ./data/user/logs
+  performance_log_dir: ./data/user/performance
+  guide_output_dir: ./data/user/guide
+  question_output_dir: ./data/user/question
+  research_output_dir: ./data/user/research/cache
+  research_reports_dir: ./data/user/research/reports
+  solve_output_dir: ./data/user/solve
+tools:
+  rag_tool:
+    kb_base_dir: ./data/knowledge_bases
+    default_kb: ai_textbook
+    # Knowledge base initialization LLM settings
+    init_llm:
+      num_ctx: 8192  # 8K context window for KB initialization (avoids high CPU usage with 256K)
+  run_code:
+    workspace: ./data/user/run_code_workspace
+    allowed_roots:
+    - ./data/user
+    - ./src/tools
+  web_search:
+    enabled: true
+    consolidation: template
+    consolidation_template: ''
+    provider: jina
+  query_item:
+    enabled: true
+    max_results: 5
+logging:
+  # Global log level for the entire system (DEBUG, INFO, WARNING, ERROR)
+  # This controls both DeepTutor logs and RAG module logs
+  level: DEBUG
+  save_to_file: true
+  console_output: true
+  # RAG module logger name mapping (optional customization)
+  rag_logger_names:
+    knowledge_init: RAG-Init
+    rag_tool: RAG
+
+memory:
+  provider: evermemos
+  enabled: true
+  api_url: "http://192.168.0.32:8001/api/v1"
+  api_key: ""
+  # Enable graceful degradation when memory service is unavailable
+  graceful_degradation: true
+  # Timeout in seconds for memory operations
+  timeout: 10
+  # Number of retries before giving up
+  max_retries: 2
+
+question:
+  # Refactored: no iteration loops (max_rounds removed)
+  rag_query_count: 3
+  max_parallel_questions: 1
+  rag_mode: naive
+  agents:
+    retrieve:
+      top_k: 30
+    generate:
+      max_retries: 2
+    relevance_analyzer:
+      enabled: true
+solve:
+  max_solve_correction_iterations: 3
+  enable_citations: true
+  save_intermediate_results: true
+  # Valid tools for investigate agent validation
+  valid_tools:
+    - "rag_naive"
+    - "rag_hybrid"
+    - "web_search"
+    - "query_item"
+    - "none"
+  agents:
+    investigate_agent:
+      max_actions_per_round: 1
+      max_iterations: 3
+    precision_answer_agent:
+      enabled: true
+research:
+  planning:
+    rephrase:
+      enabled: true
+      max_iterations: 3
+    decompose:
+      enabled: true
+      mode: auto
+      initial_subtopics: 5
+      auto_max_subtopics: 8
+  researching:
+    max_iterations: 5
+    new_topic_min_score: 0.85
+    execution_mode: series
+    max_parallel_topics: 1
+    enable_rag_naive: true
+    enable_rag_hybrid: true
+    enable_paper_search: true
+    enable_web_search: true
+    enable_run_code: true
+    tool_timeout: 60
+    tool_max_retries: 2
+    paper_search_years_limit: 3
+  reporting:
+    min_section_length: 800
+    enable_citation_list: true
+    enable_inline_citations: false
+  rag:
+    kb_name: DE-all
+    default_mode: hybrid
+    fallback_mode: naive
+  queue:
+    max_length: 5
+  presets:
+    quick:
+      description: Quick mode - fast research with minimal depth
+      planning:
+        decompose:
+          mode: manual
+          initial_subtopics: 1
+      researching:
+        max_iterations: 1
+        iteration_mode: fixed
+      reporting:
+        min_section_length: 300
+    medium:
+      description: Medium mode - balanced research depth
+      planning:
+        decompose:
+          mode: manual
+          initial_subtopics: 5
+      researching:
+        max_iterations: 4
+        iteration_mode: fixed
+      reporting:
+        min_section_length: 500
+    deep:
+      description: Deep mode - thorough research with maximum depth
+      planning:
+        decompose:
+          mode: manual
+          initial_subtopics: 8
+      researching:
+        max_iterations: 7
+        iteration_mode: fixed
+      reporting:
+        min_section_length: 800
+    auto:
+      description: Auto mode - agent decides depth within limits
+      planning:
+        decompose:
+          mode: auto
+          auto_max_subtopics: 8
+      researching:
+        max_iterations: 6
+        iteration_mode: flexible
+      reporting:
+        min_section_length: 500
+
+interrogation:
+  suspected_charges:
+  - 组织、利用迷信破坏法律实施罪
+  - 利用迷信破坏法律实施罪
+  
+# Seafile configuration (moved to environment variables)
+# SEAFILE_URL=http://192.168.0.39:8083
+# SEAFILE_USER=me@example.com
+# SEAFILE_PASSWORD=asecret
+# SEAFILE_REPO_TOKEN=d2a5be995a5d9bbf2b367b3b04986510163a8150
+# SEAFILE_REPO_ID=19d52c6d3dc1f259b3cc017785aaeaeeae544b8e
+
+agentscope:
+  enabled: true
+  studio_url: "http://localhost:3000"
+
+services_catalog:
+  display_names:
+    weknora: "WeKnora"
+    trendradar: "TrendRadar"
+    agentscope: "AgentScope"
+    openclaw: "OpenClaw"
+    "openclaw-skills": "OpenClaw Skills"
+    rerank: "ReRank"
+    mermaid: "Mermaid"
+    graphmd: "GraphMD"
+    nanobot: "Nanobot"
+    moltbot: "Moltbot"
+    deeptools: "DeepTools"
+    deepdata: "DeepData"
+    seafile: "Seafile"
+    tracing: "Tracing"
+    monitor: "Monitor"
+    dingtalk: "DingTalk"
+    proxy: "Proxy"
+    mcp: "MCP"
+    mirofish: "MiroFish"
+  descriptions:
+    weknora: "Knowledge base and agent chat"
+    trendradar: "Trend monitoring and briefings"
+    agentscope: "Runtime visualization, tracing and evaluation"
+    openclaw: "Skill marketplace and execution"
+    "openclaw-skills": "Executable OpenClaw skills"
+    rerank: "Document re-ranking service"
+    mermaid: "Mermaid diagram generation"
+    graphmd: "GraphMD export and modeling"
+    nanobot: "Bot connector and channels"
+    moltbot: "Multi-skill bot"
+    deeptools: "Utilities and tools"
+    deepdata: "Data processing endpoints"
+    seafile: "Seafile repository integration"
+    tracing: "Tracing and spans"
+    monitor: "Performance and service monitoring"
+    dingtalk: "DingTalk channel"
+    proxy: "Backend proxy for external pages"
+    mcp: "Model Context Protocol endpoints"
+    mirofish: "Multi-agent simulation and reporting"
+  health_overrides:
+    weknora: "/api/v1/weknora/status"
+    proxy: "/api/v1/proxy/config"
+    mcp: "/api/v1/mcp/status"
+    rerank: "/api/rerank/health"
+    nanobot: "/api/v1/nanobot/status"
+    moltbot: "/api/v1/moltbot/status"
+    openclaw: "/api/v1/openclaw/status"
+    trendradar: "/api/v1/trendradar/mile-city/monitoring/status"
+    mermaid: "/api/v1/mermaid/types"
+    seafile: "/api/v1/seafile/config"
+    monitor: "/api/v1/monitor/system/metrics"
+    tracing: "/api/v1/tracing/stats"
+    agentscope: "/api/v1/agentscope/agent-states"
+    "openclaw-skills": "/api/v1/openclaw-skills/marketplace/stats"
+    deepdata: "/api/v1/deepdata/projects"
+    deeptools: "/api/v1/deeptools/projects"
+    mirofish: "/api/v1/mirofish/agents"

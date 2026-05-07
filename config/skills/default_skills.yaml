@@ -1,0 +1,148 @@
+# 默认技能配置
+# Default Skills Configuration
+
+# 全局配置
+global:
+  # 默认启用的技能列表
+  enabled_by_default:
+    - context_fundamentals
+    - context_compression
+    - memory_systems
+    - tool_design
+    - evaluation
+  
+  # 默认禁用的技能列表
+  disabled_by_default:
+    - multi_agent
+  
+  # 自动加载配置
+  auto_load:
+    enabled: true
+    scan_interval: 60  # 秒
+    
+  # 热重载配置
+  hot_reload:
+    enabled: true
+    watch_files: true
+    debounce_ms: 500
+
+# 环境特定配置
+environments:
+  development:
+    enabled_skills:
+      - context_fundamentals
+      - context_compression
+      - memory_systems
+      - tool_design
+      - evaluation
+      - multi_agent
+    
+    settings:
+      debug_mode: true
+      verbose_logging: true
+      strict_validation: false
+      
+  testing:
+    enabled_skills:
+      - context_fundamentals
+      - context_compression
+      - memory_systems
+      - tool_design
+      - evaluation
+    
+    settings:
+      debug_mode: true
+      verbose_logging: true
+      strict_validation: true
+      
+  staging:
+    enabled_skills:
+      - context_fundamentals
+      - context_compression
+      - memory_systems
+      - tool_design
+      - evaluation
+      - multi_agent
+    
+    settings:
+      debug_mode: false
+      verbose_logging: true
+      strict_validation: true
+      
+  production:
+    enabled_skills:
+      - context_fundamentals
+      - context_compression
+      - memory_systems
+      - tool_design
+      - evaluation
+    
+    settings:
+      debug_mode: false
+      verbose_logging: false
+      strict_validation: true
+
+# 技能依赖关系
+dependencies:
+  context_compression:
+    requires:
+      - context_fundamentals
+    optional: []
+    
+  multi_agent:
+    requires:
+      - context_fundamentals
+      - memory_systems
+    optional:
+      - context_compression
+      
+  memory_systems:
+    requires: []
+    optional:
+      - context_fundamentals
+      
+  tool_design:
+    requires: []
+    optional:
+      - evaluation
+      
+  evaluation:
+    requires: []
+    optional: []
+
+# 技能优先级
+priority:
+  # 数字越小优先级越高
+  context_fundamentals: 1
+  memory_systems: 2
+  context_compression: 3
+  tool_design: 4
+  evaluation: 5
+  multi_agent: 6
+
+# 资源配置
+resources:
+  # 每个技能的最大内存使用（MB）
+  max_memory_per_skill: 256
+  
+  # 每个技能的最大 CPU 使用率（百分比）
+  max_cpu_per_skill: 50
+  
+  # 并发执行限制
+  max_concurrent_skills: 10
+
+# 故障恢复
+recovery:
+  # 技能加载失败时的重试次数
+  max_retries: 3
+  
+  # 重试间隔（秒）
+  retry_interval: 5
+  
+  # 失败后的回退策略
+  fallback_strategy: "disable_skill"  # 可选: disable_skill, use_default, abort
+  
+  # 关键技能列表（失败时中止系统）
+  critical_skills:
+    - context_fundamentals
+    - memory_systems

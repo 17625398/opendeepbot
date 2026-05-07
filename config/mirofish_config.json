@@ -1,0 +1,7 @@
+{
+  "enabled": true,
+  "base_url": "http://localhost:5001",
+  "api_key": "",
+  "default_world_name": "default",
+  "timeout_seconds": 1200
+}

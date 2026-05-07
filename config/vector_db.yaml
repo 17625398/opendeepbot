@@ -1,0 +1,36 @@
+# 向量数据库配置
+storage:
+  provider: "chroma"  # chroma | milvus | pgvector | faiss | qdrant
+  
+  # ChromaDB 配置
+  chroma:
+    path: "./data/vector_db/chroma"
+    
+  # Milvus 配置
+  milvus:
+    host: "${MILVUS_HOST:-localhost}"
+    port: "${MILVUS_PORT:-19530}"
+    user: "${MILVUS_USER:-}"
+    password: "${MILVUS_PASSWORD:-}"
+    
+  # PostgreSQL + pgvector 配置
+  pgvector:
+    connection_string: "${DATABASE_URL}"
+    
+  # FAISS 配置
+  faiss:
+    index_type: "IndexFlatIP"  # IndexFlatIP | IndexFlatL2 | IndexIVFFlat
+    
+  # Qdrant 配置
+  qdrant:
+    url: "${QDRANT_URL:-http://localhost:6333}"
+    api_key: "${QDRANT_API_KEY:-}"
+
+# 通用配置
+embedding_dim: 3072
+distance_metric: "cosine"  # cosine | euclidean | dot
+
+# 索引配置
+index:
+  batch_size: 100
+  optimize_threshold: 10000

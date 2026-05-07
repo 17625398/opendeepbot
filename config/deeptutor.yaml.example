@@ -1,0 +1,178 @@
+# DeepTutor Configuration File
+# Copy this file to deeptutor.yaml and customize as needed
+
+# =============================================================================
+# LLM Configuration
+# =============================================================================
+
+llm:
+  # Provider: openai, anthropic, deepseek, openrouter, ollama, vllm, lmstudio
+  provider: deepseek
+  
+  # API Key
+  api_key: ${LLM_API_KEY:}
+  
+  # Model name
+  model: deepseek-chat
+  
+  # Base URL (for custom endpoints)
+  base_url: ${LLM_BASE_URL:}
+  
+  # Temperature
+  temperature: 0.7
+  
+  # Max tokens
+  max_tokens: 4096
+  
+  # Timeout (seconds)
+  timeout: 60
+
+# =============================================================================
+# Ollama Configuration
+# =============================================================================
+
+ollama:
+  enabled: ${OLLAMA_ENABLED:false}
+  host: ${OLLAMA_HOST:http://localhost:11434}
+  model: ${OLLAMA_MODEL:llama3}
+
+# =============================================================================
+# Embedding Configuration
+# =============================================================================
+
+embedding:
+  provider: ${EMBEDDING_PROVIDER:deepseek}
+  model: ${EMBEDDING_MODEL:deepseek-embedding}
+  dimension: ${EMBEDDING_DIMENSION:1536}
+
+# =============================================================================
+# Channels Configuration
+# =============================================================================
+
+channels:
+  # Telegram Bot
+  telegram:
+    enabled: ${TELEGRAM_ENABLED:false}
+    token: ${TELEGRAM_TOKEN:}
+    name: telegram
+  
+  # Discord Bot
+  discord:
+    enabled: ${DISCORD_ENABLED:false}
+    token: ${DISCORD_TOKEN:}
+    prefix: ${DISCORD_PREFIX:!}
+    name: discord
+  
+  # WebSocket Gateway
+  websocket:
+    enabled: ${WEBSOCKET_ENABLED:true}
+    host: ${WEBSOCKET_HOST:localhost}
+    port: ${WEBSOCKET_PORT:8765}
+    name: websocket
+
+# =============================================================================
+# Database Configuration
+# =============================================================================
+
+database:
+  type: ${DATABASE_TYPE:sqlite}
+  url: ${DATABASE_URL:sqlite:///./deeptutor.db}
+  echo: false
+
+# =============================================================================
+# Memory Configuration
+# =============================================================================
+
+memory:
+  enabled: ${MEMORY_ENABLED:true}
+  vector_store: ${MEMORY_VECTOR_STORE:chromadb}
+  chroma_url: ${MEMORY_CHROMA_URL:}
+  persist_path: ${MEMORY_PERSIST_PATH:./data/memory}
+  hybrid_search: true
+  hybrid_weight: 0.5
+
+# =============================================================================
+# Agent Configuration
+# =============================================================================
+
+agent:
+  # Agent mode: normal, yolo, thinking
+  mode: ${AGENT_MODE:normal}
+  
+  # Maximum iterations
+  max_iterations: ${AGENT_MAX_ITERATIONS:10}
+  
+  # Cost tracking
+  track_cost: ${AGENT_TRACK_COST:true}
+  
+  # Workspace snapshots
+  snapshots: ${AGENT_SNAPSHOTS:true}
+  max_snapshots: 10
+  
+  # Tools configuration
+  tools:
+    - calculator
+    - file
+    - memory
+    - search
+    - executor
+    - datetime
+    - deep_tutor_services
+
+# =============================================================================
+# WebUI Configuration
+# =============================================================================
+
+webui:
+  enabled: ${WEBUI_ENABLED:true}
+  host: ${WEBUI_HOST:localhost}
+  port: ${WEBUI_PORT:3782}
+  url: ${WEBUI_URL:http://localhost:3782}
+  cors_origins: ${CORS_ORIGINS:http://localhost:3000,http://localhost:3782}
+
+# =============================================================================
+# Logging Configuration
+# =============================================================================
+
+logging:
+  level: ${LOG_LEVEL:INFO}
+  file: ${LOG_FILE:./logs/deeptutor.log}
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  date_format: "%Y-%m-%d %H:%M:%S"
+
+# =============================================================================
+# MCP (Model Context Protocol) Configuration
+# =============================================================================
+
+mcp:
+  enabled: ${MCP_ENABLED:true}
+  
+  # MCP servers configuration
+  servers:
+    # Example: Filesystem server
+    # - name: filesystem
+    #   command: npx
+    #   args:
+    #     - "-y"
+    #     - "@modelcontextprotocol/server-filesystem"
+    #     - "/path/to/allowed/directory"
+
+# =============================================================================
+# Security Configuration
+# =============================================================================
+
+security:
+  secret_key: ${SECRET_KEY:your-secret-key-here}
+  jwt_algorithm: HS256
+  jwt_expiration_days: 7
+
+# =============================================================================
+# Feature Flags
+# =============================================================================
+
+features:
+  analytics: ${ENABLE_ANALYTICS:true}
+  history: ${ENABLE_HISTORY:true}
+  statistics: ${ENABLE_STATISTICS:true}
+  thinking_mode: true
+  parallel_agents: false
