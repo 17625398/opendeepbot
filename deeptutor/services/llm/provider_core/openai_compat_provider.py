@@ -707,8 +707,10 @@ class OpenAICompatProvider(LLMProvider):
         reasoning_content = "".join(reasoning_parts) or None
 
         # Calculate cost
-        model_name = model or self.default_model
-        cost = self._calculate_cost(usage, model_name)
+        # Note: _parse_chunks is a classmethod, so we can't use self
+        # _calculate_cost is also a classmethod or staticmethod
+        model_name = model or "deepseek-chat"  # fallback default
+        cost = cls._calculate_cost(usage, model_name)
 
         return LLMResponse(
             content=content,
