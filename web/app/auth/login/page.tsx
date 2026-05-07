@@ -4,7 +4,7 @@
  * 登录页面
  */
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -17,7 +17,11 @@ import { useAuth } from "@/hooks/useAuth";
 import { useLanguage } from "@/hooks/useLanguage";
 import { t } from "@/lib/i18n";
 
-export default function LoginPage() {
+/**
+ * 登录表单（必须包裹在 Suspense 中，因为使用了 useSearchParams）
+ * Login form (must be wrapped in Suspense because it uses useSearchParams)
+ */
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { login, error } = useAuth();
@@ -270,5 +274,18 @@ export default function LoginPage() {
         </p>
       </motion.div>
     </div>
+  );
+}
+
+/** 带 Suspense 边界的主页面 / Main page with Suspense boundary */
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-pulse text-gray-500">Loading...</div>
+      </div>
+    }>
+      <LoginForm />
+    </Suspense>
   );
 }

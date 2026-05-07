@@ -13,6 +13,8 @@ from deeptutor.tools.prompting import load_prompt_hints
 from .code_edit_tool import DeepSeekCodeEditTool
 from .lsp_tool import LSPDiagnosticTool
 from .mcp_tool import MCPTool
+from .subagent_tool import SubAgentTool
+from .skill_tool import SkillTool
 
 logger = logging.getLogger(__name__)
 
@@ -514,6 +516,8 @@ BUILTIN_TOOL_TYPES: tuple[type[BaseTool], ...] = (
     GeoGebraAnalysisTool,
     DeepSeekCodeEditTool,
     LSPDiagnosticTool,
+    SubAgentTool,
+    SkillTool,
 )
 
 BUILTIN_TOOL_NAMES: tuple[str, ...] = tuple(tool_type().name for tool_type in BUILTIN_TOOL_TYPES)
@@ -577,6 +581,8 @@ __all__ = [
     "CodeExecutionTool",
     "GeoGebraAnalysisTool",
     "PaperSearchToolWrapper",
+    "SubAgentTool",
+    "SkillTool",
     "RAGTool",
     "ReasonTool",
     "WebSearchTool",
