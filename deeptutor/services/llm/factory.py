@@ -527,6 +527,17 @@ async def stream(
                         provider=config.provider_name,
                     )
                 )
+            # Send COST_UPDATE event if cost info is available
+            if stream_bus is not None and response.cost:
+                from deeptutor.core.stream import StreamEventType
+                await stream_bus.emit(
+                    StreamEvent(
+                        type=StreamEventType.COST_UPDATE,
+                        content=f"Cost: ${response.cost.get('total_cost', 0):.6f}",
+                        metadata=response.cost,
+                        source="llm",
+                    )
+                )
         except Exception as exc:
             await queue.put(map_error(exc, provider=config.provider_name))
         finally:
