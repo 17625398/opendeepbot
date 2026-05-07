@@ -12,6 +12,8 @@ from deeptutor.channels import (
     ChannelManager,
     TelegramChannel,
     DiscordChannel,
+    WeChatChannel,
+    FeishuChannel,
     WebSocketChannel,
 )
 
@@ -36,6 +38,20 @@ def load_config() -> Dict:
             "token": os.environ.get("DISCORD_TOKEN"),
             "prefix": os.environ.get("DISCORD_PREFIX", "!"),
             "name": "discord"
+        },
+        "wechat": {
+            "enabled": os.environ.get("WECHAT_ENABLED", "false").lower() == "true",
+            "token": os.environ.get("WECHAT_TOKEN"),
+            "puppet_service": os.environ.get("WECHAT_PUPPET_SERVICE", "wechaty-puppet-wechat"),
+            "name": "wechat"
+        },
+        "feishu": {
+            "enabled": os.environ.get("FEISHU_ENABLED", "false").lower() == "true",
+            "app_id": os.environ.get("FEISHU_APP_ID"),
+            "app_secret": os.environ.get("FEISHU_APP_SECRET"),
+            "encrypt_key": os.environ.get("FEISHU_ENCRYPT_KEY"),
+            "verification_token": os.environ.get("FEISHU_VERIFICATION_TOKEN"),
+            "name": "feishu"
         },
         "websocket": {
             "enabled": os.environ.get("WEBSOCKET_ENABLED", "true").lower() == "true",
@@ -63,6 +79,12 @@ async def main():
     
     if config["discord"]["enabled"]:
         channel_manager.register_channel(DiscordChannel(config["discord"]))
+    
+    if config["wechat"]["enabled"]:
+        channel_manager.register_channel(WeChatChannel(config["wechat"]))
+    
+    if config["feishu"]["enabled"]:
+        channel_manager.register_channel(FeishuChannel(config["feishu"]))
     
     if config["websocket"]["enabled"]:
         channel_manager.register_channel(WebSocketChannel(config["websocket"]))

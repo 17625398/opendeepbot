@@ -10,6 +10,8 @@ from .manager import ChannelManager
 from .base import BaseChannel
 from .telegram import TelegramChannel
 from .discord import DiscordChannel
+from .wechat import WeChatChannel
+from .feishu import FeishuChannel
 from .websocket import WebSocketChannel
 
 __all__ = [
@@ -17,6 +19,8 @@ __all__ = [
     "BaseChannel",
     "TelegramChannel",
     "DiscordChannel",
+    "WeChatChannel",
+    "FeishuChannel",
     "WebSocketChannel",
     "get_channel_manager",
 ]
