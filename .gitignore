@@ -1,48 +1,134 @@
-# Python
+# Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+
+# C extensions
 *.so
-*.egg-info/
-dist/
+
+# Distribution / packaging
+.Python
 build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
 *.egg
+MANIFEST
 
-# Virtual environments
-venv/
-.venv/
-env/
+# PyInstaller
+*.manifest
+*.spec
 
-# IDEs
-.vscode/
-.idea/
-*.swp
-*.swo
-
-# OS
-Thumbs.db
-Desktop.ini
-.DS_Store
-
-# DeepTutor specific
-deeptutor.egg-info/
+# Installer logs
 pip-log.txt
+pip-delete-this-directory.txt
 
-# Nested git repositories (do not commit as submodules)
-hermes-web-ui/
-deer-flow/
-LinkMind/
-bettafish-mindspider/
-hermes-agent-latest/
-hermes-agent-original/
-deepbot/
-clawteam/
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+cover/
 
-# Logs
+# Translations
+*.mo
+*.pot
+
+# Django stuff:
 *.log
-logs/
+local_settings.py
+db.sqlite3
+db.sqlite3-journal
 
-# Temp files
-tmp/
-temp/
-*.tmp
+# Flask stuff:
+instance/
+.webassets-cache
+
+# Scrapy stuff:
+.scrapy
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+.pybuilder/
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# poetry
+poetry.lock
+
+# pdm
+pdm.lock
+.pdm-python
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Project specific
+data/
+logs/
+*.db
+*.sqlite
+*.sqlite3
+chroma-data/
+redis-data/
+postgres-data/
