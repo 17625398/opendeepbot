@@ -5,7 +5,7 @@
  * 用户登录后的主仪表盘
  */
 
-import { useEffect } from "react";
+import { useEffect, useState, Suspense } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { motion } from "framer-motion";
@@ -123,27 +123,45 @@ const getRecentActivities = (t: (key: string) => string) => [
   { id: 4, action: t("Analyzed case"), target: "案例 #2024-001", time: "昨天", icon: Shield, color: "bg-rose-100 text-rose-600 dark:bg-rose-900/30 dark:text-rose-400" },
 ];
 
-export default function DashboardPage() {
+// 加载状态组件
+function LoadingState() {
+  return (
+    <div className="min-h-[60vh] flex items-center justify-center">
+      <div className="flex items-center gap-3">
+        <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
+        <span className="text-slate-600 dark:text-slate-400">Loading...</span>
+      </div>
+    </div>
+  );
+}
+
+// 主内容组件
+function DashboardContent() {
   const { isAuthenticated, isLoading } = useRequireAuth();
   const { lang } = useLanguage();
-  const _t = (key: string) => t(lang, key);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // 加载中状态
   if (isLoading) {
-    return (
-      <div className="min-h-[60vh] flex items-center justify-center">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full animate-spin" />
-          <span className="text-slate-600 dark:text-slate-400">{_t("Loading")}...</span>
-        </div>
-      </div>
-    );
+    return <LoadingState />;
   }
 
   // 未登录状态
   if (!isAuthenticated) {
     return null;
   }
+
+  // 防止 hydration 不匹配
+  if (!isMounted) {
+    return null;
+  }
+
+  const _t = (key: string) => t(lang, key);
+  const currentDate = new Date();
 
   return (
     <div className="space-y-8">
@@ -159,7 +177,7 @@ export default function DashboardPage() {
             {_t("Welcome back")}！
           </h1>
           <p className="text-slate-600 dark:text-slate-400 mt-2">
-            {_t("Today is")} {new Date().toLocaleDateString(lang === "zh" ? "zh-CN" : "en-US", { 
+            {_t("Today is")} {currentDate.toLocaleDateString(lang === "zh" ? "zh-CN" : "en-US", { 
               year: "numeric", 
               month: "long", 
               day: "numeric",
@@ -421,7 +439,7 @@ export default function DashboardPage() {
                     <div key={item.name} className="flex items-center justify-between">
                       <span className="text-sm text-slate-600 dark:text-slate-400">{item.name}</span>
                       <div className="flex items-center gap-2">
-                        <span className={`w-2 h-2 ${item.color} rounded-full animate-pulse`} />
+                        <span className={`w-2 h-2 ${item.color} rounded-full`} />
                         <span className="text-sm font-medium text-emerald-600">{item.status}</span>
                       </div>
                     </div>
@@ -433,5 +451,13 @@ export default function DashboardPage() {
         </motion.div>
       </div>
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<LoadingState />}>
+      <DashboardContent />
+    </Suspense>
   );
 }
