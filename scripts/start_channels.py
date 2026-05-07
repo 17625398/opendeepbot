@@ -14,6 +14,8 @@ from deeptutor.channels import (
     DiscordChannel,
     WeChatChannel,
     FeishuChannel,
+    SlackChannel,
+    EmailChannel,
     WebSocketChannel,
 )
 
@@ -53,6 +55,23 @@ def load_config() -> Dict:
             "verification_token": os.environ.get("FEISHU_VERIFICATION_TOKEN"),
             "name": "feishu"
         },
+        "slack": {
+            "enabled": os.environ.get("SLACK_ENABLED", "false").lower() == "true",
+            "bot_token": os.environ.get("SLACK_BOT_TOKEN"),
+            "app_token": os.environ.get("SLACK_APP_TOKEN"),
+            "name": "slack"
+        },
+        "email": {
+            "enabled": os.environ.get("EMAIL_ENABLED", "false").lower() == "true",
+            "smtp_host": os.environ.get("EMAIL_SMTP_HOST", "smtp.gmail.com"),
+            "smtp_port": int(os.environ.get("EMAIL_SMTP_PORT", "587")),
+            "imap_host": os.environ.get("EMAIL_IMAP_HOST", "imap.gmail.com"),
+            "imap_port": int(os.environ.get("EMAIL_IMAP_PORT", "993")),
+            "username": os.environ.get("EMAIL_USERNAME"),
+            "password": os.environ.get("EMAIL_PASSWORD"),
+            "from_email": os.environ.get("EMAIL_FROM"),
+            "name": "email"
+        },
         "websocket": {
             "enabled": os.environ.get("WEBSOCKET_ENABLED", "true").lower() == "true",
             "host": os.environ.get("WEBSOCKET_HOST", "localhost"),
@@ -85,6 +104,12 @@ async def main():
     
     if config["feishu"]["enabled"]:
         channel_manager.register_channel(FeishuChannel(config["feishu"]))
+    
+    if config["slack"]["enabled"]:
+        channel_manager.register_channel(SlackChannel(config["slack"]))
+    
+    if config["email"]["enabled"]:
+        channel_manager.register_channel(EmailChannel(config["email"]))
     
     if config["websocket"]["enabled"]:
         channel_manager.register_channel(WebSocketChannel(config["websocket"]))
