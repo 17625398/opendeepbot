@@ -11,7 +11,14 @@ import { useAuthStore } from '@/stores/authStore';
 
 export default function HomePage() {
   const router = useRouter();
-  const { isAuthenticated, loading } = useAuthStore();
+  const { isAuthenticated, loading, checkAuth } = useAuthStore();
+
+  // Check authentication status first / 首先检查认证状态
+  useEffect(() => {
+    if (!loading) {
+      checkAuth();
+    }
+  }, []);
 
   // Redirect based on authentication status / 根据认证状态重定向
   useEffect(() => {
@@ -22,7 +29,7 @@ export default function HomePage() {
         router.push('/auth');
       }
     }
-  }, [isAuthenticated, loading, router]);
+  }, [isAuthenticated, loading, checkAuth, router]);
 
   // Loading state / 加载状态
   if (loading) {
