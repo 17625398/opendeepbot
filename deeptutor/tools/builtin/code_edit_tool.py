@@ -1,4 +1,9 @@
-"""DeepSeek code editing tool with diff application."""
+"""DeepSeek code editing tool with diff application.
+DeepSeek 代码编辑工具 - 使用 diff 格式应用代码补丁。
+
+Supports unified diff format for precise code modifications.
+支持统一 diff 格式进行精确的代码修改。
+"""
 
 from __future__ import annotations
 
@@ -10,27 +15,32 @@ from deeptutor.core.tool_protocol import BaseTool, ToolDefinition, ToolParameter
 
 
 class DeepSeekCodeEditTool(BaseTool):
-    """Apply code patches in unified diff format using DeepSeek editing logic."""
-
+    """Apply code patches in unified diff format using DeepSeek editing logic.
+    使用 DeepSeek 编辑逻辑以统一 diff 格式应用代码补丁。
+    """
+    
     def get_definition(self) -> ToolDefinition:
+        """Get tool definition for registration.
+        获取用于注册的工具定义。
+        """
         return ToolDefinition(
             name="deepseek_code_edit",
-            description="Apply code patches in unified diff format to local files.",
+            description="Apply code patches in unified diff format to local files. | 使用统一 diff 格式将代码补丁应用到本地文件。",
             parameters=[
                 ToolParameter(
                     name="file_path",
                     type="string",
-                    description="Path to the file to edit (relative to workspace root).",
+                    description="Path to the file to edit (relative to workspace root). | 要编辑的文件路径（相对于工作区根目录）。",
                 ),
                 ToolParameter(
                     name="diff_content",
                     type="string",
-                    description="Unified diff content describing the changes to apply.",
+                    description="Unified diff content describing the changes to apply. | 描述要应用的更改的统一 diff 内容。",
                 ),
                 ToolParameter(
                     name="dry_run",
                     type="boolean",
-                    description="If true, preview changes without applying (default: false).",
+                    description="If true, preview changes without applying (default: false). | 如果为 true，则预览更改而不应用（默认值：false）。",
                     required=False,
                     default=False,
                 ),

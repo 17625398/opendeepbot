@@ -1,10 +1,12 @@
-"""MCP (Model Context Protocol) tool integration for DeepSeek."""
+"""MCP (Model Context Protocol) tool integration for DeepSeek.
+MCP（模型上下文协议）工具集成 - 用于 DeepSeek。
+"""
 
 from __future__ import annotations
 
+import asyncio
 import json
 import subprocess
-import asyncio
 from typing import Any
 
 from deeptutor.core.tool_protocol import BaseTool, ToolDefinition, ToolParameter, ToolResult

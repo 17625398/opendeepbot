@@ -1,0 +1,80 @@
+{
+  "version": 1,
+  "services": {
+    "llm": {
+      "active_profile_id": "llm-profile-default",
+      "active_model_id": "llm-model-1777439841725",
+      "profiles": [
+        {
+          "id": "llm-profile-default",
+          "name": "Default LLM Endpoint",
+          "binding": "ollama",
+          "base_url": "http://192.168.0.32:11434/v1",
+          "api_key": "sk-xxx",
+          "api_version": "",
+          "extra_headers": {},
+          "models": [
+            {
+              "id": "llm-model-1776737745473",
+              "name": "qwen3.6:latest",
+              "model": "qwen3.6:latest",
+              "multimodal": false,
+              "description_zh": "纯文本模型",
+              "description_en": "Text-only model"
+            },
+            {
+              "id": "llm-model-1777439841725",
+              "name": "huihui_ai/Qwen3.6-abliterated:35b",
+              "model": "huihui_ai/Qwen3.6-abliterated:35b",
+              "multimodal": true,
+              "vision": true,
+              "audio": true,
+              "video": true,
+              "context_window": 262144,
+              "description_zh": "支持文本、图像、音频、视频多模态输入",
+              "description_en": "Supports text, image, audio, video multimodal input"
+            }
+          ]
+        }
+      ]
+    },
+    "embedding": {
+      "active_profile_id": "embedding-profile-default",
+      "active_model_id": "embedding-model-1776737836032",
+      "profiles": [
+        {
+          "id": "embedding-profile-default",
+          "name": "Default Embedding Endpoint",
+          "binding": "ollama",
+          "base_url": "http://192.168.0.32:11434/v1",
+          "api_key": "sk-xxx",
+          "api_version": "",
+          "extra_headers": {},
+          "models": [
+            {
+              "id": "embedding-model-1776737836032",
+              "name": "qwen3-embedding:8b",
+              "model": "qwen3-embedding:8b",
+              "dimension": "3072"
+            }
+          ]
+        }
+      ]
+    },
+    "search": {
+      "active_profile_id": "search-profile-default",
+      "profiles": [
+        {
+          "id": "search-profile-default",
+          "name": "Default Search Provider",
+          "provider": "perplexity",
+          "base_url": "",
+          "api_key": "",
+          "api_version": "",
+          "proxy": "",
+          "models": []
+        }
+      ]
+    }
+  }
+}

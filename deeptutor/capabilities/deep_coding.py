@@ -1,4 +1,6 @@
-"""DeepSeek-powered coding capability with sub-agents."""
+"""DeepSeek-powered coding capability with sub-agents.
+DeepSeek 驱动的代码能力 - 使用子代理完成编码任务。
+"""
 
 from __future__ import annotations
 
