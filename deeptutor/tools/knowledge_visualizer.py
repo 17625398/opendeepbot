@@ -8,6 +8,10 @@ Features:
 - HTML visualization with D3.js
 - PNG/SVG image generation
 - Export to various formats
+
+Configuration:
+- Uses KGConfig for visualization settings
+- Supports environment variables for default settings
 """
 
 import json
@@ -50,10 +54,17 @@ class VisualizationConfig:
 
 
 class KnowledgeVisualizer:
-    """Knowledge graph visualization tool"""
+    """Knowledge graph visualization tool
+    
+    Uses unified KGConfig for configuration management.
+    """
     
     def __init__(self):
         self.graph = None
+        # Load visualization settings from config
+        from deeptutor.tools.kg_config import get_kg_config
+        self.kg_config = get_kg_config()
+        logger.info(f"KnowledgeVisualizer initialized with engine: {self.kg_config.visualization_engine}")
     
     def load_graph(self, data: Dict[str, Any]):
         """Load graph data from extraction result"""

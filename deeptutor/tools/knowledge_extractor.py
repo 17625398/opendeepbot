@@ -105,21 +105,23 @@ class KnowledgeExtractor:
             llm_api_key: API key (inherited from global config if None)
             llm_base_url: Base URL (inherited from global config if None)
             ollama_base_url: Ollama server URL (falls back to llm_base_url)
+        
+        Configuration Priority:
+        1. Provided parameters
+        2. Environment variables (HYPEREXTRACT_*, KG_*)
+        3. Global DeepTutor configuration
+        4. Default values
         """
-        # Load global config first
-        self._load_global_config()
+        # Use unified knowledge graph configuration
+        from deeptutor.tools.kg_config import get_hyperextract_config
+        kg_config = get_hyperextract_config()
         
-        # First check HYPEREXTRACT_* environment variables, then global config, then defaults
-        env_provider = os.environ.get("HYPEREXTRACT_LLM_PROVIDER")
-        env_model = os.environ.get("HYPEREXTRACT_LLM_MODEL")
-        env_base_url = os.environ.get("HYPEREXTRACT_BASE_URL")
-        
-        # Override with provided params, then env vars, then global config
-        self.llm_provider = llm_provider or env_provider or self._global_provider or "ollama"
-        self.llm_model = llm_model or env_model or self._global_model or "deepseek-chat"
-        self.llm_api_key = llm_api_key or self._global_api_key or ""
-        self.llm_base_url = llm_base_url or env_base_url or self._global_base_url or ""
-        self.ollama_base_url = ollama_base_url or env_base_url or self.llm_base_url or "http://localhost:11434"
+        # Override with provided params, then config, then defaults
+        self.llm_provider = llm_provider or kg_config.get("llm_provider") or "ollama"
+        self.llm_model = llm_model or kg_config.get("llm_model") or "deepseek-chat"
+        self.llm_api_key = llm_api_key or kg_config.get("llm_api_key") or ""
+        self.llm_base_url = llm_base_url or kg_config.get("llm_base_url") or ""
+        self.ollama_base_url = ollama_base_url or kg_config.get("ollama_base_url") or "http://localhost:11434"
         
         logger.info(f"Hyper-Extract config: provider={self.llm_provider}, model={self.llm_model}, base_url={self.ollama_base_url}")
         
