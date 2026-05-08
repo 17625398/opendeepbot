@@ -18,7 +18,7 @@ from typing import Optional, Dict, Any, List
 
 from deeptutor.tools.knowledge_extractor import get_extractor
 
-router = APIRouter(prefix="/api/knowledge", tags=["knowledge"])
+router = APIRouter(tags=["knowledge"])
 
 
 class ExtractRequest(BaseModel):
