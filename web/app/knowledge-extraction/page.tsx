@@ -195,7 +195,7 @@ export default function KnowledgeExtractionPage() {
     setResult(null);
 
     try {
-      const response = await fetch(`${apiUrl}/api/knowledge/extract`, {
+      const response = await fetch(apiUrl("/api/knowledge/extract"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
