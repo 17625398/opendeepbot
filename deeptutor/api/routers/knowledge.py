@@ -197,3 +197,27 @@ async def health_check():
         "status": "available" if extractor.is_available() else "unavailable",
         "service": "hyper-extract"
     }
+
+
+@router.get("/config", response_model=ExtractResponse)
+async def get_llm_config():
+    """
+    Get LLM configuration information
+    
+    Returns the current LLM provider, model, base URL, and availability status.
+    """
+    extractor = get_extractor()
+    
+    config_data = {
+        "provider": extractor.llm_provider if hasattr(extractor, 'llm_provider') else "unknown",
+        "model": extractor.llm_model if hasattr(extractor, 'llm_model') else "unknown",
+        "base_url": extractor.llm_base_url if hasattr(extractor, 'llm_base_url') else "",
+        "api_key_set": bool(extractor.llm_api_key) if hasattr(extractor, 'llm_api_key') else False,
+        "available": extractor.is_available()
+    }
+    
+    return ExtractResponse(
+        success=True,
+        data=config_data,
+        summary="LLM configuration retrieved successfully"
+    )
