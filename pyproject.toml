@@ -41,12 +41,23 @@ telegram = ["python-telegram-bot>=20.0"]
 discord = ["discord.py>=2.0"]
 slack = ["slack-bolt>=1.0"]
 email = ["aiosmtplib>=2.0", "aioimaplib>=0.9"]
+knowledge = ["hyperextract>=0.1.0"]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-asyncio>=0.21.0",
+    "pytest-cov>=4.0.0",
+    "black>=24.0.0",
+    "isort>=5.0.0",
+    "flake8>=7.0.0",
+    "mypy>=1.10.0",
+]
 all = [
     "python-telegram-bot>=20.0",
     "discord.py>=2.0",
     "slack-bolt>=1.0",
     "aiosmtplib>=2.0",
     "aioimaplib>=0.9",
+    "hyperextract>=0.1.0",
 ]
 
 [project.scripts]
