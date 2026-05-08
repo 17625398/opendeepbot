@@ -145,6 +145,11 @@ function DashboardContent() {
     setIsMounted(true);
   }, []);
 
+  // 防止 hydration 不匹配
+  if (!isMounted) {
+    return null;
+  }
+
   // 加载中状态
   if (isLoading) {
     return <LoadingState />;
@@ -152,11 +157,6 @@ function DashboardContent() {
 
   // 未登录状态
   if (!isAuthenticated) {
-    return null;
-  }
-
-  // 防止 hydration 不匹配
-  if (!isMounted) {
     return null;
   }
 
