@@ -9,16 +9,26 @@ Features:
 - Hypergraph extraction (multi-entity relationships)
 - Spatio-temporal relationship extraction
 - Domain-specific templates support
+
+Supports:
+- OpenAI API
+- Ollama local server
+- DeepSeek API
+- Inherits from DeepTutor global LLM configuration
 """
 
 import logging
 from typing import Dict, List, Optional, Any, Tuple, Callable, Type
 from pydantic import BaseModel, Field
+import os
 
 logger = logging.getLogger(__name__)
 
 # Try to import hyperextract and langchain dependencies
 HYPEREXTRACT_AVAILABLE = False
+OLLAMA_AVAILABLE = False
+OPENAI_AVAILABLE = False
+
 try:
     from hyperextract import (
         AutoGraph,
@@ -28,16 +38,28 @@ try:
         AutoSpatioTemporalGraph,
         Template,
     )
-    from langchain_openai import ChatOpenAI, OpenAIEmbeddings
     from langchain_core.language_models.chat_models import BaseChatModel
     from langchain_core.embeddings import Embeddings
     HYPEREXTRACT_AVAILABLE = True
-    logger.info("Hyper-Extract and LangChain imported successfully")
+    logger.info("Hyper-Extract imported successfully")
 except ImportError as e:
-    logger.warning(f"Hyper-Extract dependencies not available: {e}")
+    logger.warning(f"Hyper-Extract not available: {e}")
+
+try:
+    from langchain_ollama import ChatOllama, OllamaEmbeddings
+    OLLAMA_AVAILABLE = True
+    logger.info("Ollama support enabled")
+except ImportError as e:
+    logger.warning(f"Ollama not available: {e}")
+
+try:
+    from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+    OPENAI_AVAILABLE = True
+    logger.info("OpenAI support enabled")
+except ImportError as e:
+    logger.warning(f"OpenAI not available: {e}")
 
 
-# Default schemas for knowledge extraction
 class EntitySchema(BaseModel):
     """Entity/node schema for knowledge graph extraction"""
     name: str = Field(description="Entity name")
@@ -62,24 +84,42 @@ class KnowledgeExtractor:
     - Hypergraphs (multi-entity complex relationships)
     - Temporal graphs (time-aware relationships)
     - Spatial graphs (location-aware relationships)
+    
+    Inherits configuration from DeepTutor global LLM settings.
     """
     
-    def __init__(self, api_key: Optional[str] = None, llm_model: str = "gpt-4o-mini"):
+    def __init__(
+        self, 
+        llm_provider: Optional[str] = None,
+        llm_model: Optional[str] = None,
+        llm_api_key: Optional[str] = None,
+        llm_base_url: Optional[str] = None,
+        ollama_base_url: Optional[str] = None,
+    ):
         """
         Initialize the knowledge extractor
         
         Args:
-            api_key: OpenAI API key for LLM provider
-            llm_model: LLM model name to use
+            llm_provider: LLM provider (inherited from global config if None)
+            llm_model: LLM model name (inherited from global config if None)
+            llm_api_key: API key (inherited from global config if None)
+            llm_base_url: Base URL (inherited from global config if None)
+            ollama_base_url: Ollama server URL (falls back to llm_base_url)
         """
-        self.api_key = api_key
-        self.llm_model = llm_model
+        # Load global config first
+        self._load_global_config()
+        
+        # Override with provided params if specified
+        self.llm_provider = llm_provider or self._global_provider
+        self.llm_model = llm_model or self._global_model
+        self.llm_api_key = llm_api_key or self._global_api_key
+        self.llm_base_url = llm_base_url or self._global_base_url
+        self.ollama_base_url = ollama_base_url or self.llm_base_url or "http://localhost:11434"
+        
         self.llm_client: Optional[BaseChatModel] = None
         self.embedder: Optional[Embeddings] = None
         self.graph_extractor = None
         self.hypergraph_extractor = None
-        self.temporal_extractor = None
-        self.spatial_extractor = None
         
         if HYPEREXTRACT_AVAILABLE:
             try:
@@ -89,26 +129,71 @@ class KnowledgeExtractor:
             except Exception as e:
                 logger.error(f"Failed to initialize Hyper-Extract: {e}")
     
-    def _initialize_clients(self):
-        """Initialize LLM and embedding clients"""
+    def _load_global_config(self):
+        """Load global DeepTutor configuration"""
         try:
-            if self.api_key:
-                self.llm_client = ChatOpenAI(
-                    model=self.llm_model,
-                    api_key=self.api_key,
-                    temperature=0.1,
-                )
-                self.embedder = OpenAIEmbeddings(api_key=self.api_key)
+            from deeptutor.config import load_config
+            
+            config = load_config()
+            self._global_provider = config.llm.provider
+            self._global_model = config.llm.model
+            self._global_api_key = config.llm.api_key
+            self._global_base_url = config.llm.base_url
+            
+            logger.info(f"Loaded global LLM config: provider={self._global_provider}, model={self._global_model}")
+        except Exception as e:
+            # Fallback to defaults if config not available
+            logger.warning(f"Failed to load global config, using defaults: {e}")
+            self._global_provider = "deepseek"
+            self._global_model = "deepseek-chat"
+            self._global_api_key = ""
+            self._global_base_url = ""
+    
+    def _initialize_clients(self):
+        """Initialize LLM and embedding clients based on provider"""
+        try:
+            provider = self.llm_provider.lower()
+            
+            if provider == "ollama" and OLLAMA_AVAILABLE:
+                self._init_ollama_client()
+            elif provider in ("openai", "deepseek") and OPENAI_AVAILABLE:
+                self._init_openai_compatible_client()
             else:
-                # Try to use environment variables
-                self.llm_client = ChatOpenAI(
-                    model=self.llm_model,
-                    temperature=0.1,
-                )
-                self.embedder = OpenAIEmbeddings()
-            logger.info("LLM and embedder clients initialized")
+                logger.warning(f"Unknown or unsupported LLM provider: {provider}")
+                
         except Exception as e:
             logger.warning(f"Failed to initialize LLM/embedder: {e}")
+    
+    def _init_ollama_client(self):
+        """Initialize Ollama client"""
+        self.llm_client = ChatOllama(
+            model=self.llm_model,
+            base_url=self.ollama_base_url,
+            temperature=0.1,
+        )
+        self.embedder = OllamaEmbeddings(
+            model=self.llm_model,
+            base_url=self.ollama_base_url,
+        )
+        logger.info(f"Ollama client initialized: {self.llm_model} at {self.ollama_base_url}")
+    
+    def _init_openai_compatible_client(self):
+        """Initialize OpenAI-compatible client (OpenAI, DeepSeek, etc.)"""
+        api_base = self.llm_base_url
+        if self.llm_provider == "deepseek" and not api_base:
+            api_base = "https://api.deepseek.com/v1"
+        
+        self.llm_client = ChatOpenAI(
+            model=self.llm_model,
+            api_key=self.llm_api_key,
+            base_url=api_base,
+            temperature=0.1,
+        )
+        self.embedder = OpenAIEmbeddings(
+            api_key=self.llm_api_key,
+            base_url=api_base,
+        )
+        logger.info(f"OpenAI-compatible client initialized: {self.llm_model} at {api_base}")
     
     def _initialize_extractors(self):
         """Initialize all extractors"""
@@ -117,7 +202,6 @@ class KnowledgeExtractor:
             return
         
         try:
-            # Node key extractor functions
             node_key_extractor: Callable[[EntitySchema], str] = lambda x: x.name
             edge_key_extractor: Callable[[RelationSchema], str] = lambda x: f"{x.source}-{x.relation_type}-{x.target}"
             nodes_in_edge_extractor: Callable[[RelationSchema], Tuple[str, str]] = lambda x: (x.source, x.target)
@@ -157,16 +241,7 @@ class KnowledgeExtractor:
         return HYPEREXTRACT_AVAILABLE and self.graph_extractor is not None
     
     def extract_knowledge_graph(self, text: str, template_name: str = "general") -> Dict[str, Any]:
-        """
-        Extract knowledge graph from text
-        
-        Args:
-            text: Input text to extract from
-            template_name: Domain template name (general, finance, legal, medical, etc.)
-        
-        Returns:
-            Dictionary containing entities and relations
-        """
+        """Extract knowledge graph from text"""
         if not self.is_available():
             return {"success": False, "error": "Hyper-Extract not available or not configured"}
         
@@ -185,16 +260,7 @@ class KnowledgeExtractor:
             return {"success": False, "error": str(e)}
     
     def extract_hypergraph(self, text: str, template_name: str = "general") -> Dict[str, Any]:
-        """
-        Extract hypergraph from text (Hyper-Extract's specialty)
-        
-        Args:
-            text: Input text to extract from
-            template_name: Domain template name
-        
-        Returns:
-            Dictionary containing hyperedges and entities
-        """
+        """Extract hypergraph from text"""
         if not self.is_available():
             return {"success": False, "error": "Hyper-Extract not available or not configured"}
         
@@ -216,16 +282,7 @@ class KnowledgeExtractor:
             return {"success": False, "error": str(e)}
     
     def extract_all(self, text: str, template_name: str = "general") -> Dict[str, Any]:
-        """
-        Extract all knowledge types from text
-        
-        Args:
-            text: Input text to extract from
-            template_name: Domain template name
-        
-        Returns:
-            Dictionary containing all extracted knowledge
-        """
+        """Extract all knowledge types from text"""
         if not self.is_available():
             return {"success": False, "error": "Hyper-Extract not available or not configured"}
         
@@ -298,12 +355,11 @@ class KnowledgeExtractor:
         return ["general", "finance", "legal", "medical", "tcm", "industry"]
 
 
-# Global extractor instance
 _extractor_instance = None
 
 def get_extractor(api_key: Optional[str] = None) -> KnowledgeExtractor:
     """Get or create the knowledge extractor instance"""
     global _extractor_instance
     if _extractor_instance is None:
-        _extractor_instance = KnowledgeExtractor(api_key=api_key)
+        _extractor_instance = KnowledgeExtractor(llm_api_key=api_key)
     return _extractor_instance
