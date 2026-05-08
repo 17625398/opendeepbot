@@ -222,7 +222,7 @@ class KnowledgeExtractor:
             logger.warning(f"Template {template_name} not found, using general template")
             return Template.load("general")
     
-    def _graph_to_dict(self, graph: KnowledgeGraph) -> Dict[str, Any]:
+    def _graph_to_dict(self, graph: Any) -> Dict[str, Any]:
         """Convert KnowledgeGraph to dict"""
         return {
             "entities": [{"id": e.id, "label": e.label, "attributes": dict(e.attributes)} 
@@ -231,7 +231,7 @@ class KnowledgeExtractor:
                          for r in graph.relations]
         }
     
-    def _hypergraph_to_dict(self, hypergraph: Hypergraph) -> Dict[str, Any]:
+    def _hypergraph_to_dict(self, hypergraph: Any) -> Dict[str, Any]:
         """Convert Hypergraph to dict"""
         return {
             "entities": [{"id": e.id, "label": e.label} for e in hypergraph.entities],
@@ -239,7 +239,7 @@ class KnowledgeExtractor:
                            "attributes": dict(h.attributes)} for h in hypergraph.hyperedges]
         }
     
-    def _temporal_to_dict(self, temporal: TemporalGraph) -> Dict[str, Any]:
+    def _temporal_to_dict(self, temporal: Any) -> Dict[str, Any]:
         """Convert TemporalGraph to dict"""
         return {
             "events": [{"id": e.id, "timestamp": str(e.timestamp), "description": e.description, 
