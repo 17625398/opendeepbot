@@ -58,6 +58,16 @@ const getQuickAccessItems = (t: (key: string) => string) => [
     badge: "New",
   },
   {
+    id: "knowledge-extraction",
+    title: "Knowledge Extraction",
+    description: "智能知识提取与图谱构建",
+    icon: Brain,
+    href: "/knowledge-extraction",
+    color: "from-purple-500 to-violet-600",
+    shadowColor: "shadow-purple-500/30",
+    badge: "New",
+  },
+  {
     id: "assistant",
     title: t("AI Assistant"),
     description: t("Smart Q&A and knowledge retrieval"),

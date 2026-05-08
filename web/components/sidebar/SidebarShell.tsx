@@ -72,6 +72,7 @@ const NAV_GROUPS: NavGroup[] = [
     items: [
       { href: "/chat", label: "Chat", icon: MessageSquare },
       { href: "/deeptutor-chat", label: "DeepTutor", icon: Network },
+      { href: "/knowledge-extraction", label: "Knowledge", icon: Brain },
       { href: "/agents", label: "TutorBot", icon: Bot },
       { href: "/research", label: "Research", icon: Microscope },
       { href: "/question", label: "Question", icon: Search },
