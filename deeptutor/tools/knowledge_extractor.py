@@ -124,8 +124,11 @@ class KnowledgeExtractor:
         if HYPEREXTRACT_AVAILABLE:
             try:
                 self._initialize_clients()
-                self._initialize_extractors()
-                logger.info("Hyper-Extract extractors initialized successfully")
+                if self.llm_client and self.embedder:
+                    self._initialize_extractors()
+                    logger.info("Hyper-Extract extractors initialized successfully")
+                else:
+                    logger.warning("LLM client or embedder not initialized, Hyper-Extract disabled")
             except Exception as e:
                 logger.error(f"Failed to initialize Hyper-Extract: {e}")
     
