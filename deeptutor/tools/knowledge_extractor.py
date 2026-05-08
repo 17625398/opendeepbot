@@ -109,12 +109,19 @@ class KnowledgeExtractor:
         # Load global config first
         self._load_global_config()
         
-        # Override with provided params if specified
-        self.llm_provider = llm_provider or self._global_provider
-        self.llm_model = llm_model or self._global_model
-        self.llm_api_key = llm_api_key or self._global_api_key
-        self.llm_base_url = llm_base_url or self._global_base_url
-        self.ollama_base_url = ollama_base_url or self.llm_base_url or "http://localhost:11434"
+        # First check HYPEREXTRACT_* environment variables, then global config, then defaults
+        env_provider = os.environ.get("HYPEREXTRACT_LLM_PROVIDER")
+        env_model = os.environ.get("HYPEREXTRACT_LLM_MODEL")
+        env_base_url = os.environ.get("HYPEREXTRACT_BASE_URL")
+        
+        # Override with provided params, then env vars, then global config
+        self.llm_provider = llm_provider or env_provider or self._global_provider or "ollama"
+        self.llm_model = llm_model or env_model or self._global_model or "deepseek-chat"
+        self.llm_api_key = llm_api_key or self._global_api_key or ""
+        self.llm_base_url = llm_base_url or env_base_url or self._global_base_url or ""
+        self.ollama_base_url = ollama_base_url or env_base_url or self.llm_base_url or "http://localhost:11434"
+        
+        logger.info(f"Hyper-Extract config: provider={self.llm_provider}, model={self.llm_model}, base_url={self.ollama_base_url}")
         
         self.llm_client: Optional[BaseChatModel] = None
         self.embedder: Optional[Embeddings] = None
@@ -157,15 +164,22 @@ class KnowledgeExtractor:
         try:
             provider = self.llm_provider.lower()
             
+            logger.debug(f"Initializing LLM client for provider: {provider}")
+            logger.debug(f"OLLAMA_AVAILABLE: {OLLAMA_AVAILABLE}, OPENAI_AVAILABLE: {OPENAI_AVAILABLE}")
+            
             if provider == "ollama" and OLLAMA_AVAILABLE:
                 self._init_ollama_client()
+            elif provider == "ollama" and not OLLAMA_AVAILABLE:
+                logger.error("Ollama provider specified but langchain_ollama not installed")
             elif provider in ("openai", "deepseek") and OPENAI_AVAILABLE:
                 self._init_openai_compatible_client()
+            elif provider in ("openai", "deepseek") and not OPENAI_AVAILABLE:
+                logger.error(f"{provider} provider specified but langchain_openai not installed")
             else:
                 logger.warning(f"Unknown or unsupported LLM provider: {provider}")
                 
         except Exception as e:
-            logger.warning(f"Failed to initialize LLM/embedder: {e}")
+            logger.warning(f"Failed to initialize LLM/embedder: {e}", exc_info=True)
     
     def _init_ollama_client(self):
         """Initialize Ollama client"""
@@ -241,7 +255,21 @@ class KnowledgeExtractor:
     
     def is_available(self) -> bool:
         """Check if Hyper-Extract is available and configured"""
-        return HYPEREXTRACT_AVAILABLE and self.graph_extractor is not None
+        if not HYPEREXTRACT_AVAILABLE:
+            logger.debug("Hyper-Extract not available: package not installed")
+            return False
+        if self.graph_extractor is None:
+            logger.debug("Hyper-Extract not available: graph extractor not initialized")
+            return False
+        return True
+    
+    def get_unavailable_reason(self) -> str:
+        """Get the reason why Hyper-Extract is not available"""
+        if not HYPEREXTRACT_AVAILABLE:
+            return "Hyper-Extract package not installed"
+        if self.graph_extractor is None:
+            return "LLM client not configured. Please check your LLM settings in .env file."
+        return "Unknown reason"
     
     def extract_knowledge_graph(self, text: str, template_name: str = "general") -> Dict[str, Any]:
         """Extract knowledge graph from text"""
