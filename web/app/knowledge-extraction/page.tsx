@@ -316,10 +316,10 @@ export default function KnowledgeExtractionPage() {
                     <SelectContent>
                       {TEMPLATES.map((t) => (
                         <SelectItem key={t.value} value={t.value}>
-                          <div className="flex justify-between items-center w-full">
+                          <span className="flex justify-between items-center w-full">
                             <span>{t.label}</span>
                             <span className="text-xs text-slate-400">{t.description}</span>
-                          </div>
+                          </span>
                         </SelectItem>
                       ))}
                     </SelectContent>
